@@ -3,11 +3,8 @@ package timeseries.controller;
 import com.crazzyghost.alphavantage.parameters.Interval;
 import com.crazzyghost.alphavantage.parameters.OutputSize;
 import timeseries.domain.model.StockData;
-import timeseries.domain.model.StockDataRepository;
-import timeseries.domain.usecase.StoreStockDataUseCase;
-import timeseries.domain.usecase.FetchStockDataUseCase;
-import timeseries.infrastructure.adapters.api.AlphaVantageAPIAdapter;
-import timeseries.infrastructure.adapters.database.StockDataRepositoryImpl;
+import timeseries.infrastructure.adapters.api.AlphaVantageAPI;
+import timeseries.infrastructure.adapters.database.DatabaseManager;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -15,16 +12,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class IntradayFetcher {
-
-    private final FetchStockDataUseCase fetchUseCase;
-    private final StoreStockDataUseCase storeUseCase;
     private final String symbol;
+    private final AlphaVantageAPI apiAdapter;
+    private final String dbUrl;
 
     public IntradayFetcher(String apiKey, String dbUrl, String symbol, Interval interval, OutputSize outputSize) {
         this.symbol = symbol;
-        this.fetchUseCase = new AlphaVantageAPIAdapter(apiKey, interval, outputSize);
-        StockDataRepository repository = new StockDataRepositoryImpl(dbUrl);
-        this.storeUseCase = new StoreStockDataUseCase(repository);
+        this.apiAdapter = new AlphaVantageAPI(apiKey, interval, outputSize);
+        this.dbUrl = dbUrl;
     }
 
     public void startFetchingEvery(int intervalMinutes) {
@@ -33,19 +28,19 @@ public class IntradayFetcher {
         scheduler.scheduleAtFixedRate(() -> {
             try {
                 System.out.println("→ Ejecutando fetch de datos para " + symbol);
-                List<StockData> stockData = fetchUseCase.fetch(symbol);
-                storeUseCase.store(stockData);
+                List<StockData> stockData = apiAdapter.fetch(symbol);
+
+                DatabaseManager.saveAll(stockData, dbUrl);
+
                 System.out.println("✓ Datos almacenados correctamente.\n");
             } catch (Exception e) {
-                System.err.println("⚠️ Error durante la ejecución del fetch: " + e.getMessage());
+                System.err.println("Error durante la ejecución del fetch: " + e.getMessage());
             }
         }, 0, intervalMinutes, TimeUnit.MINUTES);
 
-        // Hook para cerrar el scheduler al cerrar la app
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Cerrando scheduler...");
             scheduler.shutdown();
         }));
     }
 }
-
