@@ -1,0 +1,86 @@
+package es.ulpgc.dacd.timeseries.infrastructure.adapters.provider;
+
+import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.StockDataProvider;
+import com.crazzyghost.alphavantage.AlphaVantage;
+import com.crazzyghost.alphavantage.Config;
+import com.crazzyghost.alphavantage.parameters.Interval;
+import com.crazzyghost.alphavantage.parameters.OutputSize;
+import com.crazzyghost.alphavantage.timeseries.response.TimeSeriesResponse;
+import com.crazzyghost.alphavantage.timeseries.response.StockUnit;
+
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AlphaVantageAPI implements StockDataProvider {
+
+    private final Interval interval;
+    private final OutputSize outputSize;
+
+    public AlphaVantageAPI(String apiKey, Interval interval, OutputSize outputSize) {
+        initializeAlphaVantage(apiKey);
+        this.interval = interval;
+        this.outputSize = outputSize;
+    }
+
+    private void initializeAlphaVantage(String apiKey) {
+        Config cfg = Config.builder()
+                .key(apiKey)
+                .timeOut(10)
+                .build();
+        AlphaVantage.api().init(cfg);
+    }
+
+    @Override
+    public List<AlphaVantageEvent> fetch(String symbol) {
+        TimeSeriesResponse response = fetchTimeSeriesData(symbol);
+        return processResponse(response, symbol);
+    }
+
+    private TimeSeriesResponse fetchTimeSeriesData(String symbol) {
+        try {
+            return AlphaVantage.api()
+                    .timeSeries()
+                    .intraday()
+                    .forSymbol(symbol)
+                    .interval(interval)
+                    .outputSize(outputSize)
+                    .fetchSync();
+        } catch (Exception e) {
+            System.err.println("Error al obtener los datos de la API para el símbolo: " + symbol);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<AlphaVantageEvent> processResponse(TimeSeriesResponse response, String symbol) {
+        List<AlphaVantageEvent> events = new ArrayList<>();
+        if (response != null && response.getStockUnits() != null) {
+            for (StockUnit unit : response.getStockUnits()) {
+                AlphaVantageEvent event = createAlphaVantageEvent(symbol, unit);
+                events.add(event);
+            }
+        }
+        return events;
+    }
+
+    private AlphaVantageEvent createAlphaVantageEvent(String symbol, StockUnit unit) {
+        Instant timestamp = parseTimestamp(unit.getDate());
+        return new AlphaVantageEvent(
+                symbol,
+                timestamp,
+                unit.getOpen(),
+                unit.getHigh(),
+                unit.getLow(),
+                unit.getClose(),
+                unit.getVolume()
+        );
+    }
+
+    private Instant parseTimestamp(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
+        return Instant.from(formatter.parse(dateString + "Z"));
+    }
+}
