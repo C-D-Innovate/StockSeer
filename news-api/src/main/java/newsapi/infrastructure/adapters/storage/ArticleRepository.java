@@ -1,4 +1,4 @@
-package newsapi.infrastructure.adapters.database;
+package newsapi.infrastructure.adapters.storage;
 
 import newsapi.domain.model.Articles;
 
@@ -86,7 +86,7 @@ public class ArticleRepository {
         String sql = """
             CREATE TABLE IF NOT EXISTS articles (
                 url TEXT PRIMARY KEY,
-                publishedAt TIMESTAMP,
+                publishedAt TEXT,
                 content TEXT,
                 title TEXT
             )

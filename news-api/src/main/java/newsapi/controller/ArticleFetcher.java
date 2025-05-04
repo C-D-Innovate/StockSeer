@@ -2,7 +2,7 @@ package newsapi.controller;
 
 import newsapi.domain.model.Articles;
 import newsapi.infrastructure.ports.api.NewsApiPort;
-import newsapi.infrastructure.ports.database.DatabasePort;
+import newsapi.infrastructure.ports.storage.StoragePort;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 public class ArticleFetcher {
     private final ScheduledExecutorService scheduler;
     private final NewsApiPort apiPort;
-    private final DatabasePort dbPort;
+    private final StoragePort dbPort;
     private final String query;
 
-    public ArticleFetcher(NewsApiPort apiPort, DatabasePort dbPort, String query) {
+    public ArticleFetcher(NewsApiPort apiPort, StoragePort dbPort, String query) {
         this.apiPort = apiPort;
         this.dbPort = dbPort;
         this.query = query;

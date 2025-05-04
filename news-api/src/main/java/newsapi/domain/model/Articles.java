@@ -1,6 +1,12 @@
 package newsapi.domain.model;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
+
 import java.time.Instant;
 import java.util.Objects;
+
 
 public class Articles {
     private final String url;
@@ -53,4 +59,15 @@ public class Articles {
                 ", title='" + title + '\'' +
                 '}';
     }
+
+    public String toJson() {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Instant.class, (JsonSerializer<Instant>)
+                        (src, typeOfSrc, context) -> new JsonPrimitive(src.toString()))
+                .create();
+
+        return gson.toJson(this);
+    }
+
+
 }

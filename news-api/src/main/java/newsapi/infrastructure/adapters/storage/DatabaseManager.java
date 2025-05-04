@@ -1,11 +1,11 @@
-package newsapi.infrastructure.adapters.database;
+package newsapi.infrastructure.adapters.storage;
 
 import newsapi.domain.model.Articles;
-import newsapi.infrastructure.ports.database.DatabasePort;
+import newsapi.infrastructure.ports.storage.StoragePort;
 
 import java.util.List;
 
-public class DatabaseManager implements DatabasePort {
+public class DatabaseManager implements StoragePort {
     private final ArticleRepository repository;
 
     public DatabaseManager(String dbUrl) {
