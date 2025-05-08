@@ -29,16 +29,19 @@ public class NewsApiClientAdapter implements NewsApiPort {
 
     @Override
     public CompletableFuture<List<ArticleEvent>> fetchArticles(String query) {
-        CompletableFuture<List<ArticleEvent>> future = new CompletableFuture<>();
-
         LocalDate today = LocalDate.now();
         LocalDate fromDate = today.minusDays(30);
+        return fetchArticles(query, fromDate.toString(), today.toString());
+    }
+
+    public CompletableFuture<List<ArticleEvent>> fetchArticles(String query, String from, String to) {
+        CompletableFuture<List<ArticleEvent>> future = new CompletableFuture<>();
 
         EverythingRequest request = new EverythingRequest.Builder()
                 .q(query)
                 .language(defaultLanguage)
-                .from(fromDate.toString())
-                .to(today.toString())
+                .from(from)
+                .to(to)
                 .build();
 
         newsApiClient.getEverything(request, new NewsApiClient.ArticlesResponseCallback() {
@@ -47,8 +50,9 @@ public class NewsApiClientAdapter implements NewsApiPort {
                 if (response != null && response.getArticles() != null) {
                     List<ArticleEvent> events = response.getArticles().stream()
                             .map(article -> mapToEvent(article, query))
+                            .filter(e -> e != null)
                             .collect(Collectors.toList());
-                    LOGGER.info("Retrieved " + events.size() + " articles for query: " + query);
+                    LOGGER.info("Retrieved " + events.size() + " articles for query: " + query + " from: " + from + " to: " + to);
                     future.complete(events);
                 } else {
                     LOGGER.warning("No articles found for query: " + query);
@@ -68,12 +72,13 @@ public class NewsApiClientAdapter implements NewsApiPort {
 
     private ArticleEvent mapToEvent(Article article, String topic) {
         try {
+            Instant publishedAt = Instant.parse(article.getPublishedAt());
             return new ArticleEvent(
                     topic,
                     sourceSystem,
-                    Instant.now(), // ts del evento
+                    publishedAt, // Este campo será usado por el eventstore para agrupar por fecha
                     article.getUrl(),
-                    Instant.parse(article.getPublishedAt()),
+                    publishedAt,
                     article.getContent(),
                     article.getTitle()
             );
