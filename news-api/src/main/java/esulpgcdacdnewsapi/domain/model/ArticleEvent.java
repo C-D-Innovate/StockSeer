@@ -1,24 +1,53 @@
-package newsapi.domain.model;
+package esulpgcdacdnewsapi.domain.model;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
 import java.time.Instant;
-import java.util.Objects;
+import java.time.format.DateTimeFormatter;
 
-
-public class Articles {
+public class ArticleEvent {
+    private final String topic;
+    private final String ss;
+    private final Instant ts;
     private final String url;
     private final Instant publishedAt;
     private final String content;
     private final String title;
 
-    public Articles(String url, Instant publishedAt, String content, String title) {
+    public ArticleEvent(String topic, String ss, Instant ts, String url, Instant publishedAt, String content, String title) {
+        this.topic = topic;
+        this.ss = ss;
+        this.ts = ts;
         this.url = url;
         this.publishedAt = publishedAt;
         this.content = content;
         this.title = title;
+    }
+
+    public ArticleEvent(String url, Instant publishedAt, String content, String title) {
+        this.url = url;
+        this.publishedAt = publishedAt;
+        this.content = content;
+        this.title = title;
+        this.topic = null;
+        this.ss = null;
+        this.ts = Instant.now(); // timestamp actual como fallback
+    }
+
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public String getSs() {
+        return ss;
+    }
+
+    public Instant getTs() {
+        return ts;
     }
 
     public String getUrl() {
@@ -37,23 +66,18 @@ public class Articles {
         return title;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Articles that = (Articles) o;
-        return Objects.equals(url, that.url);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(url);
+    public String getStoragePath() {
+        String date = DateTimeFormatter.ofPattern("yyyyMMdd").format(ts);
+        return String.format("eventstore/%s/%s/%s.events", topic, ss, date);
     }
 
     @Override
     public String toString() {
-        return "ArticlesData{" +
-                "url='" + url + '\'' +
+        return "ArticleEvent{" +
+                "topic='" + topic + '\'' +
+                ", ss='" + ss + '\'' +
+                ", ts=" + ts +
+                ", url='" + url + '\'' +
                 ", publishedAt=" + publishedAt +
                 ", content='" + (content != null ? content.substring(0, Math.min(content.length(), 50)) + "..." : null) + '\'' +
                 ", title='" + title + '\'' +
@@ -68,6 +92,4 @@ public class Articles {
 
         return gson.toJson(this);
     }
-
-
 }
