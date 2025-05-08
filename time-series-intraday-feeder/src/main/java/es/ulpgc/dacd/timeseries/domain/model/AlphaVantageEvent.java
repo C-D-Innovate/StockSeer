@@ -6,7 +6,7 @@ public class AlphaVantageEvent {
 
     private final String ss;
     private String symbol;
-    private Instant timestamp;
+    private Instant ts;
     private double open;
     private double high;
     private double low;
@@ -15,7 +15,7 @@ public class AlphaVantageEvent {
 
     public AlphaVantageEvent(String symbol, Instant timestamp, double open, double high, double low, double close, long volume) {
         this.symbol = symbol;
-        this.timestamp = timestamp;
+        this.ts = timestamp;
         this.open = open;
         this.high = high;
         this.low = low;
@@ -30,14 +30,14 @@ public class AlphaVantageEvent {
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
-    public Instant getTimestamp() {
-        return timestamp;
+    public Instant getTs() {
+        return ts;
     }
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
+    public void setTs(Instant timestamp) {
+        this.ts = timestamp;
     }
-    public String getFormattedTimestamp() {
-        return timestamp.toString();
+    public String getFormattedTs() {
+        return ts.toString();
     }
     public double getOpen() {
         return open;
@@ -72,4 +72,17 @@ public class AlphaVantageEvent {
     public String getSs() {
         return ss;
     }
+    @Override
+    public String toString() {
+        return "AlphaVantageEvent{" +
+                "symbol='" + symbol + '\'' +
+                ", ts=" + ts +
+                ", open=" + open +
+                ", high=" + high +
+                ", low=" + low +
+                ", close=" + close +
+                ", volume=" + volume +
+                '}';
+    }
+
 }

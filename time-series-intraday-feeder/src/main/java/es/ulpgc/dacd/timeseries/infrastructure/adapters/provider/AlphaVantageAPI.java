@@ -19,6 +19,10 @@ public class AlphaVantageAPI implements StockDataProvider {
     private final Interval interval;
     private final OutputSize outputSize;
 
+    public AlphaVantageAPI(String apiKey) {
+        this(apiKey, Interval.ONE_MIN, OutputSize.FULL);
+    }
+
     public AlphaVantageAPI(String apiKey, Interval interval, OutputSize outputSize) {
         initializeAlphaVantage(apiKey);
         this.interval = interval;
@@ -59,8 +63,7 @@ public class AlphaVantageAPI implements StockDataProvider {
         List<AlphaVantageEvent> events = new ArrayList<>();
         if (response != null && response.getStockUnits() != null) {
             for (StockUnit unit : response.getStockUnits()) {
-                AlphaVantageEvent event = createAlphaVantageEvent(symbol, unit);
-                events.add(event);
+                events.add(createAlphaVantageEvent(symbol, unit));
             }
         }
         return events;

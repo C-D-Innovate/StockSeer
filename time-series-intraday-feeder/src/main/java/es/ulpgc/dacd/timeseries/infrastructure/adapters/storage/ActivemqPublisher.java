@@ -2,12 +2,15 @@ package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.serialization.InstantAdapter;
 import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.StockDataStorage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -18,7 +21,6 @@ public class ActivemqPublisher implements StockDataStorage {
     private Topic topic;
     private MessageProducer producer;
     private final Gson gson;
-    private AlphaVantageEvent lastPublished;
 
     public ActivemqPublisher(String brokerUrl, String topicName) {
         this.gson = new GsonBuilder()
@@ -39,33 +41,46 @@ public class ActivemqPublisher implements StockDataStorage {
 
         } catch (JMSException e) {
             System.err.println("Error al inicializar la conexión con ActiveMQ: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     @Override
-    public void saveAll(List<AlphaVantageEvent> data, String dbUrl) {
-        data.forEach(this::publish);
-    }
+    public void saveOpeningAndClosingEvents(List<AlphaVantageEvent> data, String context) {
+        List<AlphaVantageEvent> filtered = MarketHoursFilter.filterExactTodayOpeningAndClosing(data);
 
-    @Override
-    public boolean isDuplicate(AlphaVantageEvent data, String dbUrl) {
-        return lastPublished != null &&
-                lastPublished.getSymbol().equals(data.getSymbol()) &&
-                lastPublished.getTimestamp().equals(data.getTimestamp());
+        if (filtered.isEmpty()) {
+            System.out.println("No hay eventos de apertura o cierre para publicar.");
+            if (!data.isEmpty()) {
+                AlphaVantageEvent latest = data.getFirst();
+                System.out.println("Último evento recibido de la API:");
+                System.out.println(latest);
+            }
+            return;
+        }
+
+        filtered.forEach(this::publish);
     }
 
     private void publish(AlphaVantageEvent event) {
         try {
-            if (!isDuplicate(event, "")) {
-                String json = gson.toJson(event);
-                TextMessage message = session.createTextMessage(json);
-                producer.send(topic, message);
-                lastPublished = event;
-                System.out.println("→ Publicado al topic: " + json);
-            }
+            String json = gson.toJson(event);
+            TextMessage message = session.createTextMessage(json);
+            producer.send(topic, message);
+            System.out.println("→ Publicado al topic: " + json);
         } catch (JMSException e) {
             System.err.println("Error al publicar evento: " + e.getMessage());
+        }
+    }
+
+    private static class InstantAdapter extends TypeAdapter<Instant> {
+        @Override
+        public void write(JsonWriter out, Instant value) throws IOException {
+            out.value(value.toString());
+        }
+
+        @Override
+        public Instant read(JsonReader in) throws IOException {
+            return Instant.parse(in.nextString());
         }
     }
 }

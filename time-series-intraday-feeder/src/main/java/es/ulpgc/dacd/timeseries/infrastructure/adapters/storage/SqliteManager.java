@@ -9,63 +9,78 @@ import java.util.List;
 public class SqliteManager implements StockDataStorage {
 
     private final String dbUrl;
-    private AlphaVantageEvent lastSaved;
 
     public SqliteManager(String dbUrl) {
         this.dbUrl = dbUrl;
         initializeDatabase();
     }
 
-    private Connection connect() throws SQLException {
-        return DriverManager.getConnection(dbUrl);
-    }
-
     @Override
-    public void saveAll(List<AlphaVantageEvent> data, String dbUrl) {
-        data.forEach(this::insert);
-    }
+    public void saveOpeningAndClosingEvents(List<AlphaVantageEvent> data, String context) {
+        List<AlphaVantageEvent> filteredEvents = MarketHoursFilter.filterExactTodayOpeningAndClosing(data);
 
-    @Override
-    public boolean isDuplicate(AlphaVantageEvent data, String dbUrl) {
-        return lastSaved != null && lastSaved.getSymbol().equals(data.getSymbol()) &&
-                lastSaved.getTimestamp().equals(data.getTimestamp());
-    }
+        if (filteredEvents.isEmpty()) {
+            System.out.println("No hay eventos de apertura o cierre para guardar.");
 
-    public void insert(AlphaVantageEvent data) {
-        if (!isDuplicate(data, dbUrl)) {
-            String insertSQL = "INSERT OR IGNORE INTO stock_data (ss, symbol, timestamp, open, high, low, close, volume) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
-                pstmt.setString(1, data.getSs());
-                pstmt.setString(2, data.getSymbol());
-                pstmt.setString(3, data.getFormattedTimestamp());
-                pstmt.setDouble(4, data.getOpen());
-                pstmt.setDouble(5, data.getHigh());
-                pstmt.setDouble(6, data.getLow());
-                pstmt.setDouble(7, data.getClose());
-                pstmt.setLong(8, data.getVolume());
-                pstmt.executeUpdate();
-                lastSaved = data;
-            } catch (SQLException e) {
-                System.err.println("Error al insertar los datos: " + e.getMessage());
+            if (!data.isEmpty()) {
+                AlphaVantageEvent latest = data.getFirst();
+                System.out.println("Último evento recibido de la API:");
+                System.out.println(latest);
             }
+            return;
+        }
+
+        insertEvents(filteredEvents);
+    }
+
+    private void insertEvents(List<AlphaVantageEvent> events) {
+        try (Connection connection = DriverManager.getConnection(dbUrl)) {
+            try (PreparedStatement stmt = prepareInsertStatement(connection)) {
+                for (AlphaVantageEvent event : events) {
+                    bindEventToStatement(stmt, event);
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+                System.out.println("→ Guardados en SQLite: " + events.size() + " evento(s)");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al guardar eventos en SQLite: " + e.getMessage());
         }
     }
 
+    private PreparedStatement prepareInsertStatement(Connection connection) throws SQLException {
+        String sql = """
+                INSERT OR IGNORE INTO events (symbol, ts, open, high, low, close, volume)
+                VALUES (?, ?, ?, ?, ?, ?, ?);
+                """;
+        return connection.prepareStatement(sql);
+    }
+
+    private void bindEventToStatement(PreparedStatement stmt, AlphaVantageEvent event) throws SQLException {
+        stmt.setString(1, event.getSymbol());
+        stmt.setString(2, event.getTs().toString());
+        stmt.setDouble(3, event.getOpen());
+        stmt.setDouble(4, event.getHigh());
+        stmt.setDouble(5, event.getLow());
+        stmt.setDouble(6, event.getClose());
+        stmt.setLong(7, event.getVolume());
+    }
+
     private void initializeDatabase() {
-        String createTableSQL = "CREATE TABLE IF NOT EXISTS stock_data (" +
-                "ss TEXT NOT NULL, " +
-                "symbol TEXT NOT NULL, " +
-                "timestamp TEXT NOT NULL, " +
-                "open REAL, " +
-                "high REAL, " +
-                "low REAL, " +
-                "close REAL, " +
-                "volume INTEGER, " +
-                "PRIMARY KEY (symbol, timestamp)" +
-                ")";
-        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-            stmt.execute(createTableSQL);
+        try (Connection connection = DriverManager.getConnection(dbUrl)) {
+            String sql = """
+                    CREATE TABLE IF NOT EXISTS events (
+                        symbol TEXT NOT NULL,
+                        ts TEXT NOT NULL,
+                        open REAL,
+                        high REAL,
+                        low REAL,
+                        close REAL,
+                        volume INTEGER,
+                        PRIMARY KEY (symbol, ts)
+                    );
+                    """;
+            connection.createStatement().execute(sql);
         } catch (SQLException e) {
             System.err.println("Error al inicializar la base de datos: " + e.getMessage());
         }
