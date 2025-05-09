@@ -1,6 +1,7 @@
 package es.ulpgc.dacd.newsapi.controller;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticleMapper;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ArticleEventPublisher;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
@@ -40,31 +41,30 @@ public class ArticleFetcher {
             }
 
             int storedCount = 0;
-            boolean isBroker = storage instanceof ArticleEventPublisher;
+            Instant ts = new ArticleMapper("NewsApiFeeder").parseDate(to);
+
 
             for (ArticleEvent article : articles) {
-                // Solo verificamos duplicados si estamos usando el broker
-                if (isBroker && !urlChecker.isDuplicate(article.getUrl())) {
-                    boolean success = storage.saveArticle(article);
+                if (!urlChecker.isDuplicate(article.getUrl())) {
+                    ArticleEvent correctedArticle = new ArticleEvent(
+                            "Articles",
+                            article.getSs(),
+                            ts, // Ahora usamos `ts` con `parseDate()`
+                            article.getUrl(),
+                            article.getPublishedAt(),
+                            article.getContent(),
+                            article.getTitle()
+                    );
+
+                    boolean success = storage.saveArticle(correctedArticle);
                     if (success) {
                         urlChecker.markAsSeen(article.getUrl());
                         storedCount++;
                     }
                 }
-                else if (!isBroker) {
-                    boolean success = storage.saveArticle(article);
-                    if (success) {
-                        storedCount++;
-                    }
-                }
             }
 
-            if (storedCount > 0) {
-                System.out.println(storedCount + " artículos almacenados para " + from + " a " + to);
-            } else {
-                System.out.println("No se almacenaron artículos para " + from + " a " + to);
-            }
-
+            System.out.println(storedCount + " artículos almacenados para " + from + " a " + to);
         }).exceptionally(ex -> {
             System.err.println("Error al obtener artículos entre " + from + " y " + to + ": " + ex.getMessage());
             return null;
