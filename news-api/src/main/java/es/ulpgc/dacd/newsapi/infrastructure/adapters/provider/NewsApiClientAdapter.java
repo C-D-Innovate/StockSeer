@@ -34,7 +34,7 @@ public class NewsApiClientAdapter implements NewsApiPort {
             public void onSuccess(ArticleResponse response) {
                 if (response != null && response.getArticles() != null) {
                     List<ArticleEvent> events = response.getArticles().stream()
-                            .map(article -> articleMapper.map(article, "Articles", to)) // Ahora usa el tópico correcto
+                            .map(article -> articleMapper.map(article, "Articles", to))
                             .filter(e -> e != null)
                             .collect(Collectors.toList());
 
