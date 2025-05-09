@@ -37,7 +37,7 @@ public class Main {
         String duplicateUrl = config.get("DUPLICATE_URL");
 
         NewsApiClient client = NewsApiClientAdapter.createApiClient(apiKey);
-        NewsApiPort newsApi = new NewsApiClientAdapter(client, defaultLanguage, sourceSystem);
+        NewsApiPort newsApi = new NewsApiClientAdapter(client, defaultLanguage, sourceSystem, topicName);
         JmsConfig jmsConfig = new JmsConfig(brokerUrl, queueName, topicName);
         DuplicateUrlChecker urlChecker = new DuplicateUrlChecker(duplicateUrl);
 

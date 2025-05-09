@@ -31,7 +31,6 @@ public class ArticleFetcher {
         fetchArticles(query, from, to);
     }
 
-
     public void fetchArticles(String query, String from, String to) {
         newsApi.fetchArticles(query, from, to).thenAccept(articles -> {
             if (articles.isEmpty()) {

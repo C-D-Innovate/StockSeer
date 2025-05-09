@@ -17,7 +17,7 @@ public class ArticleMapper {
         this.sourceSystem = sourceSystem;
     }
 
-    public ArticleEvent map(Article article, String topic, String to) {
+    public ArticleEvent map(Article article, String topic) {
         try {
             Instant publishedAt = Instant.parse(article.getPublishedAt());
             Instant ts = Instant.now().atZone(ZoneOffset.UTC).minusDays(1).toInstant();

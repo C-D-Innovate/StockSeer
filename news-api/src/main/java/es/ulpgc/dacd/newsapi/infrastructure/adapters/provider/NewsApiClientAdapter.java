@@ -17,11 +17,13 @@ public class NewsApiClientAdapter implements NewsApiPort {
     private final NewsApiClient newsApiClient;
     private final NewsApiRequestBuilder requestBuilder;
     private final ArticleMapper articleMapper;
+    private final String topic;
 
-    public NewsApiClientAdapter(NewsApiClient newsApiClient, String defaultLanguage, String sourceSystem) {
+    public NewsApiClientAdapter(NewsApiClient newsApiClient, String defaultLanguage, String sourceSystem, String topic) {
         this.newsApiClient = newsApiClient;
         this.requestBuilder = new NewsApiRequestBuilder(defaultLanguage);
         this.articleMapper = new ArticleMapper(sourceSystem);
+        this.topic = topic;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class NewsApiClientAdapter implements NewsApiPort {
             public void onSuccess(ArticleResponse response) {
                 if (response != null && response.getArticles() != null) {
                     List<ArticleEvent> events = response.getArticles().stream()
-                            .map(article -> articleMapper.map(article, "Articles", to))
+                            .map(article -> articleMapper.map(article, topic))
                             .filter(e -> e != null)
                             .collect(Collectors.toList());
 
