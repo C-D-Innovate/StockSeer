@@ -1,15 +1,16 @@
 import com.kwabenaberko.newsapilib.NewsApiClient;
-import esulpgcdacdnewsapi.controller.ArticleFetcher;
-import esulpgcdacdnewsapi.infrastructure.adapters.provider.NewsApiClientAdapter;
-import esulpgcdacdnewsapi.infrastructure.adapters.storage.ArticleEventPublisher;
-import esulpgcdacdnewsapi.infrastructure.adapters.storage.DatabaseManager;
-import esulpgcdacdnewsapi.infrastructure.ports.provider.NewsApiPort;
-import esulpgcdacdnewsapi.infrastructure.ports.storage.StoragePort;
+import es.ulpgc.dacd.newsapi.controller.ArticleFetcher;
+import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.NewsApiClientAdapter;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ArticleEventPublisher;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.DatabaseManager;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.JmsConfig;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
+import es.ulpgc.dacd.newsapi.infrastructure.utils.DuplicateUrlChecker;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,24 +26,29 @@ public class Main {
         }
 
         String apiKey = config.get("API_KEY");
-        String defaultLanguage = config.getOrDefault("DEFAULT_LANGUAGE", "en");
+        String defaultLanguage = config.get("DEFAULT_LANGUAGE");
         String dbUrl = config.get("DB_URL");
         String brokerUrl = config.get("BROKER_URL");
         String queueName = config.get("QUEUE_NAME");
         String topicName = config.get("TOPIC_NAME");
-        int fetchIntervalHours = Integer.parseInt(config.get("FETCH_INTERVAL_HOURS"));
-        String sourceSystem = config.get("SOURCE_SYSTEM");
         String storageTarget = config.get("STORAGE_TARGET").toLowerCase();
+        String sourceSystem = config.get("SOURCE_SYSTEM");
+        String query = config.get("QUERY");
+        String duplicateUrl = config.get("DUPLICATE_URL");
 
         NewsApiClient client = NewsApiClientAdapter.createApiClient(apiKey);
         NewsApiPort newsApi = new NewsApiClientAdapter(client, defaultLanguage, sourceSystem);
+        JmsConfig jmsConfig = new JmsConfig(brokerUrl, queueName, topicName);
+        DuplicateUrlChecker urlChecker = new DuplicateUrlChecker(duplicateUrl);
 
         StoragePort storage = storageTarget.equals("broker")
-                ? new ArticleEventPublisher(brokerUrl, queueName, topicName)
+                ? new ArticleEventPublisher(jmsConfig)
                 : new DatabaseManager(dbUrl);
 
-        ArticleFetcher fetcher = new ArticleFetcher(newsApi, storage);
-        fetcher.fetchHistorical("Articles", 30); // ← genera 30 días hacia atrás
-
+        ArticleFetcher fetcher = new ArticleFetcher(newsApi, storage, urlChecker);
+        fetcher.fetchToday(query);
+        Thread.sleep(5000);
+        storage.close();
     }
 }
+

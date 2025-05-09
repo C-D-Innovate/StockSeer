@@ -1,14 +1,10 @@
-package esulpgcdacdnewsapi.infrastructure.adapters.provider;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.provider;
 
 import com.kwabenaberko.newsapilib.NewsApiClient;
-import com.kwabenaberko.newsapilib.models.Article;
-import com.kwabenaberko.newsapilib.models.request.EverythingRequest;
 import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
-import esulpgcdacdnewsapi.domain.model.ArticleEvent;
-import esulpgcdacdnewsapi.infrastructure.ports.provider.NewsApiPort;
+import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -17,41 +13,31 @@ import java.util.stream.Collectors;
 
 public class NewsApiClientAdapter implements NewsApiPort {
     private static final Logger LOGGER = Logger.getLogger(NewsApiClientAdapter.class.getName());
+
     private final NewsApiClient newsApiClient;
-    private final String defaultLanguage;
-    private final String sourceSystem;
+    private final NewsApiRequestBuilder requestBuilder;
+    private final ArticleMapper articleMapper;
 
     public NewsApiClientAdapter(NewsApiClient newsApiClient, String defaultLanguage, String sourceSystem) {
         this.newsApiClient = newsApiClient;
-        this.defaultLanguage = defaultLanguage;
-        this.sourceSystem = sourceSystem;
+        this.requestBuilder = new NewsApiRequestBuilder(defaultLanguage);
+        this.articleMapper = new ArticleMapper(sourceSystem);
     }
 
     @Override
-    public CompletableFuture<List<ArticleEvent>> fetchArticles(String query) {
-        LocalDate today = LocalDate.now();
-        LocalDate fromDate = today.minusDays(30);
-        return fetchArticles(query, fromDate.toString(), today.toString());
-    }
-
     public CompletableFuture<List<ArticleEvent>> fetchArticles(String query, String from, String to) {
         CompletableFuture<List<ArticleEvent>> future = new CompletableFuture<>();
-
-        EverythingRequest request = new EverythingRequest.Builder()
-                .q(query)
-                .language(defaultLanguage)
-                .from(from)
-                .to(to)
-                .build();
+        var request = requestBuilder.build(query, from, to);
 
         newsApiClient.getEverything(request, new NewsApiClient.ArticlesResponseCallback() {
             @Override
             public void onSuccess(ArticleResponse response) {
                 if (response != null && response.getArticles() != null) {
                     List<ArticleEvent> events = response.getArticles().stream()
-                            .map(article -> mapToEvent(article, query))
+                            .map(article -> articleMapper.map(article, query))
                             .filter(e -> e != null)
                             .collect(Collectors.toList());
+
                     LOGGER.info("Retrieved " + events.size() + " articles for query: " + query + " from: " + from + " to: " + to);
                     future.complete(events);
                 } else {
@@ -68,24 +54,6 @@ public class NewsApiClientAdapter implements NewsApiPort {
         });
 
         return future;
-    }
-
-    private ArticleEvent mapToEvent(Article article, String topic) {
-        try {
-            Instant publishedAt = Instant.parse(article.getPublishedAt());
-            return new ArticleEvent(
-                    topic,
-                    sourceSystem,
-                    publishedAt, // Este campo será usado por el eventstore para agrupar por fecha
-                    article.getUrl(),
-                    publishedAt,
-                    article.getContent(),
-                    article.getTitle()
-            );
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error mapping article: " + article.getUrl(), e);
-            return null;
-        }
     }
 
     public static NewsApiClient createApiClient(String apiKey) {
