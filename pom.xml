@@ -7,6 +7,11 @@
     <groupId>org.cdinnovated</groupId>
     <artifactId>dacd2-project</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>event-store-builder</module>
+    </modules>
 
     <modules>
         <module>time-series-intraday-feeder</module>
@@ -18,5 +23,5 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
 </project>
