@@ -2,6 +2,7 @@ package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage;
 
 import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +19,8 @@ public class MarketHoursFilter {
                 .filter(event -> {
                     ZonedDateTime eventTime = event.getTs().atZone(MARKET_ZONE);
                     LocalDate date = eventTime.toLocalDate();
-                    LocalTime time = eventTime.toLocalTime();
+                    LocalTime time = eventTime.toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+
                     return date.equals(today) &&
                             (time.equals(OPEN_TIME) || time.equals(CLOSE_TIME));
                 })

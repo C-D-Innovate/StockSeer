@@ -10,6 +10,9 @@ import com.crazzyghost.alphavantage.timeseries.response.TimeSeriesResponse;
 import com.crazzyghost.alphavantage.timeseries.response.StockUnit;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +57,6 @@ public class AlphaVantageAPI implements StockDataProvider {
                     .fetchSync();
         } catch (Exception e) {
             System.err.println("Error al obtener los datos de la API para el símbolo: " + symbol);
-            e.printStackTrace();
             return null;
         }
     }
@@ -83,7 +85,10 @@ public class AlphaVantageAPI implements StockDataProvider {
     }
 
     private Instant parseTimestamp(String dateString) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
-        return Instant.from(formatter.parse(dateString + "Z"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, formatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("America/New_York"));
+        return zonedDateTime.toInstant();
     }
+
 }
