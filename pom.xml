@@ -11,9 +11,6 @@
 
     <modules>
         <module>event-store-builder</module>
-    </modules>
-
-    <modules>
         <module>time-series-intraday-feeder</module>
         <module>news-api</module>
     </modules>

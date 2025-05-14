@@ -1,10 +1,8 @@
 package es.ulpgc.dacd.newsapi.controller;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticleMapper;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
-import es.ulpgc.dacd.newsapi.infrastructure.utils.DuplicateUrlChecker;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -12,12 +10,10 @@ import java.time.format.DateTimeFormatter;
 public class ArticleFetcher {
     private final NewsApiPort newsApi;
     private final StoragePort storage;
-    private final DuplicateUrlChecker urlChecker;
 
-    public ArticleFetcher(NewsApiPort newsApi, StoragePort storage, DuplicateUrlChecker urlChecker) {
+    public ArticleFetcher(NewsApiPort newsApi, StoragePort storage) {
         this.newsApi = newsApi;
         this.storage = storage;
-        this.urlChecker = urlChecker;
     }
 
     public void fetchToday(String query) {
@@ -42,23 +38,18 @@ public class ArticleFetcher {
             Instant ts = Instant.now().atZone(ZoneOffset.UTC).minusDays(1).toInstant();
 
             for (ArticleEvent article : articles) {
-                if (!urlChecker.isDuplicate(article.getUrl())) {
-                    ArticleEvent correctedArticle = new ArticleEvent(
-                            "Articles",
-                            article.getSs(),
-                            ts,
-                            article.getUrl(),
-                            article.getPublishedAt(),
-                            article.getContent(),
-                            article.getTitle()
-                    );
+                ArticleEvent correctedArticle = new ArticleEvent(
+                        "Articles",
+                        article.getSs(),
+                        ts,
+                        article.getUrl(),
+                        article.getPublishedAt(),
+                        article.getContent(),
+                        article.getTitle()
+                );
 
-                    boolean success = storage.saveArticle(correctedArticle);
-                    if (success) {
-                        urlChecker.markAsSeen(article.getUrl());
-                        storedCount++;
-                    }
-                }
+                boolean success = storage.saveArticle(correctedArticle);
+                if (success) storedCount++;
             }
 
             System.out.println(storedCount + " artículos almacenados para " + from + " a " + to);

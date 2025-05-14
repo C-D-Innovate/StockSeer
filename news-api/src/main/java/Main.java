@@ -7,7 +7,6 @@ import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.DatabaseManager;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.JmsConfig;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
-import es.ulpgc.dacd.newsapi.infrastructure.utils.DuplicateUrlChecker;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -34,18 +33,16 @@ public class Main {
         String storageTarget = config.get("STORAGE_TARGET").toLowerCase();
         String sourceSystem = config.get("SOURCE_SYSTEM");
         String query = config.get("QUERY");
-        String duplicateUrl = config.get("DUPLICATE_URL");
 
         NewsApiClient client = NewsApiClientAdapter.createApiClient(apiKey);
         NewsApiPort newsApi = new NewsApiClientAdapter(client, defaultLanguage, sourceSystem, topicName);
         JmsConfig jmsConfig = new JmsConfig(brokerUrl, queueName, topicName);
-        DuplicateUrlChecker urlChecker = new DuplicateUrlChecker(duplicateUrl);
 
         StoragePort storage = storageTarget.equals("broker")
                 ? new ArticleEventPublisher(jmsConfig)
                 : new DatabaseManager(dbUrl);
 
-        ArticleFetcher fetcher = new ArticleFetcher(newsApi, storage, urlChecker);
+        ArticleFetcher fetcher = new ArticleFetcher(newsApi, storage);
         fetcher.fetchToday(query);
         Thread.sleep(5000);
         storage.close();
