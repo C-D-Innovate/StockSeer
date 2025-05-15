@@ -19,7 +19,7 @@ public class IntradayFetcher {
     private final String context;
 
     private final ZoneId zone = ZoneId.of("America/New_York");
-    private final LocalTime marketClose = LocalTime.of(20, 5);
+    private final LocalTime marketClose = LocalTime.of(14, 19);
 
     public IntradayFetcher(String symbol, StockDataProvider dataProvider, StockDataStorage dataStorage, String context) {
         this.symbol = symbol;

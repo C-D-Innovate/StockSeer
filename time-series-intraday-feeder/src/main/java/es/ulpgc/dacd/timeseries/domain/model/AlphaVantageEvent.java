@@ -51,6 +51,7 @@ public class AlphaVantageEvent {
     public void setHigh(double high) {
         this.high = high;
     }
+
     public double getLow() {
         return low;
     }

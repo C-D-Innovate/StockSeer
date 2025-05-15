@@ -13,7 +13,7 @@ public class MarketHoursFilter {
     private static final LocalTime CLOSE_TIME = LocalTime.of(16, 0);
 
     public static List<AlphaVantageEvent> filterExactTodayOpeningAndClosing(List<AlphaVantageEvent> events) {
-        LocalDate today = ZonedDateTime.now(MARKET_ZONE).toLocalDate();
+        LocalDate today = ZonedDateTime.now(MARKET_ZONE).toLocalDate().minusDays(1);
 
         return events.stream()
                 .filter(event -> {

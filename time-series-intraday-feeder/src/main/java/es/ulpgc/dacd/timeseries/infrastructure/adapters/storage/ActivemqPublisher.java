@@ -2,6 +2,7 @@ package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -63,7 +64,10 @@ public class ActivemqPublisher implements StockDataStorage {
 
     private void publish(AlphaVantageEvent event) {
         try {
-            String json = gson.toJson(event);
+            JsonObject jsonObject = gson.toJsonTree(event).getAsJsonObject();
+            jsonObject.addProperty("topic", "AlphaVantageEvent");
+            String json = gson.toJson(jsonObject);
+
             TextMessage message = session.createTextMessage(json);
             producer.send(topic, message);
             System.out.println("→ Publicado al topic: " + json);
