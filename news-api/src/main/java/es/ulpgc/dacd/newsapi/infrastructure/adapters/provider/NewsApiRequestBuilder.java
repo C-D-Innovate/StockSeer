@@ -12,7 +12,6 @@ public class NewsApiRequestBuilder {
     }
 
     public EverythingRequest build(String query, String from, String to) {
-        // Convertir a Instant para asegurarnos de que el formato es válido
         from = validateDate(from);
         to = validateDate(to);
 
@@ -27,9 +26,9 @@ public class NewsApiRequestBuilder {
     private String validateDate(String date) {
         try {
             if (!date.endsWith("Z")) {
-                date += "Z"; // Añadir 'Z' si falta
+                date += "Z";
             }
-            return Instant.parse(date).toString(); // Asegura formato ISO 8601 con UTC
+            return Instant.parse(date).toString();
         } catch (Exception e) {
             throw new IllegalArgumentException("Formato de fecha inválido: " + date, e);
         }
