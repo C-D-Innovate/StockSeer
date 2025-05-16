@@ -1,6 +1,5 @@
 import com.kwabenaberko.newsapilib.NewsApiClient;
 import es.ulpgc.dacd.newsapi.controller.ArticleFetcher;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.NewsApiClientAdapter;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ArticleEventPublisher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.DatabaseManager;
@@ -8,11 +7,9 @@ import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.JmsConfig;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -24,27 +21,34 @@ public class Main {
             }
         }
 
-        String apiKey = config.get("API_KEY");
+        String apiKey          = config.get("API_KEY");
         String defaultLanguage = config.get("DEFAULT_LANGUAGE");
-        String dbUrl = config.get("DB_URL");
-        String brokerUrl = config.get("BROKER_URL");
-        String queueName = config.get("QUEUE_NAME");
-        String topicName = config.get("TOPIC_NAME");
-        String storageTarget = config.get("STORAGE_TARGET").toLowerCase();
-        String sourceSystem = config.get("SOURCE_SYSTEM");
-        String query = config.get("QUERY");
+        String dbUrl           = config.get("DB_URL");
+        String brokerUrl       = config.get("BROKER_URL");
+        String queueName       = config.get("QUEUE_NAME");
+        String topicName       = config.get("TOPIC_NAME");
+        String storageTarget   = config.get("STORAGE_TARGET").toLowerCase();
+        String sourceSystem    = config.get("SOURCE_SYSTEM");
+        String query           = config.get("QUERY");
 
         NewsApiClient client = NewsApiClientAdapter.createApiClient(apiKey);
-        NewsApiPort newsApi = new NewsApiClientAdapter(client, defaultLanguage, sourceSystem, topicName);
-        JmsConfig jmsConfig = new JmsConfig(brokerUrl, queueName, topicName);
+        NewsApiPort newsApi = new NewsApiClientAdapter(
+                client,
+                defaultLanguage,
+                sourceSystem,
+                topicName
+        );
 
         StoragePort storage = storageTarget.equals("broker")
-                ? new ArticleEventPublisher(jmsConfig)
+                ? new ArticleEventPublisher(new JmsConfig(brokerUrl, queueName, topicName))
                 : new DatabaseManager(dbUrl);
 
-        ArticleFetcher fetcher = new ArticleFetcher(newsApi, storage);
-        fetcher.fetchToday(query);
-        Thread.sleep(5000);
+        ArticleFetcher fetcher = new ArticleFetcher(newsApi, storage, topicName);
+
+        CompletableFuture<Void> future = fetcher.fetchToday(query);
+        future.join();
+
         storage.close();
+        System.exit(0);
     }
 }

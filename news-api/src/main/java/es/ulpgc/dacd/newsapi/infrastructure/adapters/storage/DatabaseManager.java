@@ -23,7 +23,11 @@ public class DatabaseManager implements StoragePort {
 
     @Override
     public int saveArticles(List<ArticleEvent> articles) {
-        String sql = "INSERT INTO articles(url, publishedAt, content, title) VALUES (?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO articles
+                (url, publishedAt, content, title, fullContent)
+            VALUES (?, ?, ?, ?, ?)
+        """;  // ← Añadido fullContent
         int successCount = 0;
 
         for (ArticleEvent article : articles) {
@@ -32,6 +36,7 @@ public class DatabaseManager implements StoragePort {
                 stmt.setString(2, article.getPublishedAt().toString());
                 stmt.setString(3, article.getContent());
                 stmt.setString(4, article.getTitle());
+                stmt.setString(5, article.getFullContent());  // ← SET del nuevo campo
                 stmt.executeUpdate();
                 successCount++;
             } catch (SQLException e) {
@@ -49,7 +54,9 @@ public class DatabaseManager implements StoragePort {
 
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) result.add(fromResultSet(rs));
+            while (rs.next()) {
+                result.add(fromResultSet(rs));
+            }
         } catch (SQLException e) {
             System.err.println("Error al obtener artículos: " + e.getMessage());
         }
@@ -80,7 +87,8 @@ public class DatabaseManager implements StoragePort {
                 url TEXT PRIMARY KEY,
                 publishedAt TEXT,
                 content TEXT,
-                title TEXT
+                title TEXT,
+                fullContent TEXT    -- ← Nueva columna
             )
         """;
         try (Statement stmt = connection.createStatement()) {
@@ -95,7 +103,8 @@ public class DatabaseManager implements StoragePort {
                 rs.getString("url"),
                 Instant.parse(rs.getString("publishedAt")),
                 rs.getString("content"),
-                rs.getString("title")
+                rs.getString("title"),
+                rs.getString("fullContent")   // ← Recuperamos fullContent
         );
     }
 }

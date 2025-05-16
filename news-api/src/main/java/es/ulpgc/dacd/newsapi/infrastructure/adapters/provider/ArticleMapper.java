@@ -5,7 +5,6 @@ import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +21,14 @@ public class ArticleMapper {
             Instant publishedAt = Instant.parse(article.getPublishedAt());
             Instant ts = Instant.now().atZone(ZoneOffset.UTC).minusDays(1).toInstant();
 
+            String fullContent;
+            try {
+                fullContent = PythonScriptRunner.extractFullContent(article.getUrl());
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "No se pudo extraer fullContent, usando content breve", e);
+                fullContent = article.getContent();
+            }
+
             return new ArticleEvent(
                     topic,
                     sourceSystem,
@@ -29,10 +36,11 @@ public class ArticleMapper {
                     article.getUrl(),
                     publishedAt,
                     article.getContent(),
-                    article.getTitle()
+                    article.getTitle(),
+                    fullContent
             );
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error mapping article: " + article.getUrl(), e);
+            LOGGER.log(Level.WARNING, "Error mapeando article: " + article.getUrl(), e);
             return null;
         }
     }
