@@ -24,10 +24,6 @@ public class ArticleFetcher {
         this.topicName = topicName;
     }
 
-    /**
-     * Lanza la petición y devuelve un CompletableFuture que se completa
-     * cuando todos los artículos han sido procesados y almacenados.
-     */
     public CompletableFuture<Void> fetchToday(String query) {
         ZonedDateTime yesterdayUtc     = Instant.now().atZone(ZoneOffset.UTC).minusDays(1);
         LocalDate     date             = yesterdayUtc.toLocalDate();
@@ -62,14 +58,14 @@ public class ArticleFetcher {
             }
 
             ArticleEvent enriched = new ArticleEvent(
-                    topicName,              // topic
-                    brief.getSs(),          // ss (source system)
-                    ts,                     // ts
+                    topicName,
+                    brief.getSs(),
+                    ts,
                     brief.getUrl(),
                     brief.getPublishedAt(),
-                    brief.getContent(),     // content breve
+                    brief.getContent(),
                     brief.getTitle(),
-                    fullContent             // fullContent
+                    fullContent
             );
 
             if (storage.saveArticle(enriched)) {

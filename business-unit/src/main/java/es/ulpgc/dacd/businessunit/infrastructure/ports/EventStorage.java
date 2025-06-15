@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.businessunit.infrastructure.adapters.ports.out;
+package es.ulpgc.dacd.businessunit.infrastructure.ports;
 
 import es.ulpgc.dacd.businessunit.domain.model.MarketEvent;
 import es.ulpgc.dacd.businessunit.domain.model.NewsEvent;

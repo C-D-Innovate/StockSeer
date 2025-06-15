@@ -1,3 +1,4 @@
+package es.ulpgc.dacd.newsapi;
 import com.kwabenaberko.newsapilib.NewsApiClient;
 import es.ulpgc.dacd.newsapi.controller.ArticleFetcher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.NewsApiClientAdapter;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Map<String, String> config = new HashMap<>();
         for (String arg : args) {
             String[] parts = arg.split("=", 2);

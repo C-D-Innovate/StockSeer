@@ -1,5 +1,6 @@
 package es.ulpgc.dacd.businessunit.infrastructure.adapters.utils;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.ulpgc.dacd.businessunit.domain.model.MarketEvent;
@@ -8,7 +9,12 @@ import es.ulpgc.dacd.businessunit.domain.model.NewsEvent;
 import java.time.Instant;
 
 public class EventParser {
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
+
+    public EventParser() {
+        this.mapper = new ObjectMapper();
+        this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     public MarketEvent parseMarketEvent(String json) {
         try {
@@ -28,9 +34,12 @@ public class EventParser {
         try {
             JsonNode root = mapper.readTree(json);
             String url = root.get("url").asText();
-            String fullContent = root.get("content").asText();
             Instant ts = Instant.parse(root.get("ts").asText());
-            return new NewsEvent(url, fullContent, ts);
+
+            String content = root.hasNonNull("content") ? root.get("content").asText() : "";
+            String fullContent = root.hasNonNull("fullContent") ? root.get("fullContent").asText() : content;
+
+            return new NewsEvent(url, content, ts, fullContent, null);
         } catch (Exception e) {
             System.err.println("[WARN] Error parseando NewsEvent: " + e.getMessage());
             return null;

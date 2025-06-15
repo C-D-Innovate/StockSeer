@@ -16,8 +16,8 @@ public class DatamartStorage {
                 symbol TEXT,
                 day TEXT,
                 open_ts TEXT,
-                close_ts TEXT,
                 open_price REAL,
+                close_ts TEXT,
                 close_price REAL,
                 news_count INTEGER,
                 avg_sent REAL,
@@ -29,7 +29,7 @@ public class DatamartStorage {
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            throw new RuntimeException("❌ Error creando clean_datamart: " + e.getMessage(), e);
+            throw new RuntimeException("Error creando clean_datamart: " + e.getMessage(), e);
         }
     }
 
@@ -41,14 +41,14 @@ public class DatamartStorage {
 
             String insertSql = """
                 INSERT INTO clean_datamart (
-                    symbol, day, open_ts, close_ts, open_price, close_price, news_count, avg_sent
+                    symbol, day, open_ts, open_price, close_ts, close_price, news_count, avg_sent
                 )
                 SELECT
                     m.symbol,
                     m.date AS day,
                     MIN(CASE strftime('%H:%M', m.ts) WHEN '13:30' THEN m.ts ELSE NULL END) AS open_ts,
-                    MIN(CASE strftime('%H:%M', m.ts) WHEN '20:00' THEN m.ts ELSE NULL END) AS close_ts,
                     MIN(CASE strftime('%H:%M', m.ts) WHEN '13:30' THEN m.price ELSE NULL END) AS open_price,
+                    MIN(CASE strftime('%H:%M', m.ts) WHEN '20:00' THEN m.ts ELSE NULL END) AS close_ts,
                     MIN(CASE strftime('%H:%M', m.ts) WHEN '20:00' THEN m.price ELSE NULL END) AS close_price,
                     COUNT(DISTINCT n.url) AS news_count,
                     NULL AS avg_sent
@@ -60,17 +60,44 @@ public class DatamartStorage {
             stmt.execute(insertSql);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al consolidar clean_datamart: " + e.getMessage());
+            System.err.println("Error al consolidar clean_datamart: " + e.getMessage());
         }
     }
 
-    public void resetTempTables() {
+    public void updateAvgSentiment() {
+        String updateSql = """
+            WITH sentiment_numeric AS (
+                SELECT 
+                    date,
+                    CASE 
+                        WHEN sentiment_label = 'POSITIVE' THEN 1.0
+                        WHEN sentiment_label = 'NEUTRAL' THEN 0.0
+                        WHEN sentiment_label = 'NEGATIVE' THEN -1.0
+                        ELSE NULL
+                    END AS score
+                FROM dirty_news
+            ),
+            avg_sent_by_date AS (
+                SELECT date, AVG(score) AS avg_sent
+                FROM sentiment_numeric
+                WHERE score IS NOT NULL
+                GROUP BY date
+            )
+            UPDATE clean_datamart
+            SET avg_sent = (
+                SELECT avg_sent 
+                FROM avg_sent_by_date 
+                WHERE clean_datamart.day = avg_sent_by_date.date
+            )
+            WHERE day IN (SELECT date FROM avg_sent_by_date);
+            """;
+
         try (Connection conn = DriverManager.getConnection(dbUrl);
              Statement stmt = conn.createStatement()) {
-            stmt.execute("DELETE FROM dirty_market");
-            stmt.execute("DELETE FROM dirty_news");
+            int updatedRows = stmt.executeUpdate(updateSql);
+            System.out.println("avg_sent actualizado para " + updatedRows + " filas.");
         } catch (SQLException e) {
-            System.err.println("❌ Error limpiando tablas temporales: " + e.getMessage());
+            System.err.println("Error actualizando avg_sent en clean_datamart: " + e.getMessage());
         }
     }
 }

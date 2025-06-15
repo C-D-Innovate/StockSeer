@@ -32,7 +32,6 @@ public class ArticleEvent {
         this.fullContent = fullContent;  // ← ASIGNACIÓN
     }
 
-    // Constructor alternativo para casos “sin topic/ss/ts”
     public ArticleEvent(
             String url,
             Instant publishedAt,
@@ -41,26 +40,6 @@ public class ArticleEvent {
             String fullContent      // ← NUEVO
     ) {
         this(url, null, null, url, publishedAt, content, title, fullContent);
-    }
-
-    private ArticleEvent(
-            String url,
-            Instant publishedAt,
-            String content,
-            String title,
-            String topic,
-            String ss,
-            Instant ts,
-            String fullContent     // ← NUEVO
-    ) {
-        this.topic = topic;
-        this.ss = ss;
-        this.ts = ts;
-        this.url = url;
-        this.publishedAt = publishedAt;
-        this.content = content;
-        this.title = title;
-        this.fullContent = fullContent;
     }
 
     // — Getters —

@@ -17,7 +17,7 @@ public class ArgsParser {
                 }
             }
         } catch (IOException e) {
-            System.err.println("❌ Error leyendo archivo de argumentos: " + e.getMessage());
+            System.err.println("Error leyendo archivo de argumentos: " + e.getMessage());
         }
         return args;
     }

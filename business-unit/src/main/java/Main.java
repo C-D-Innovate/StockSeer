@@ -1,9 +1,10 @@
 import es.ulpgc.dacd.businessunit.application.HistoryReplayService;
 import es.ulpgc.dacd.businessunit.application.RealTimeSyncService;
-import es.ulpgc.dacd.businessunit.controller.EventHandler;
+import es.ulpgc.dacd.businessunit.controller.EventController;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.HistoricalEventReader;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.ActiveMQSubscriber;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.ports.out.EventStorage;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.PythonScriptRunner;
+import es.ulpgc.dacd.businessunit.infrastructure.ports.EventStorage;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.DatamartStorage;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.SqliteEventStorage;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.ArgsParser;
@@ -12,10 +13,9 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 public class Main {
-
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println("❌ Debes proporcionar la ruta al archivo de configuración.");
+            System.err.println("Debes proporcionar la ruta al archivo de configuración.");
             return;
         }
 
@@ -28,17 +28,18 @@ public class Main {
         String clientId = config.get("CLIENT_ID");
 
         if (topicsStr == null || topicsStr.isBlank()) {
-            System.err.println("❌ No se ha configurado la clave TOPICS en el archivo.");
+            System.err.println("No se ha configurado la clave TOPICS en el archivo.");
             return;
         }
-        EventStorage storage = new SqliteEventStorage(dbUrl);
-        DatamartStorage datamartStorage = new DatamartStorage(dbUrl);
-        datamartStorage.resetTempTables();
 
-        EventHandler handler = new EventHandler(storage);
+        PythonScriptRunner runner = new PythonScriptRunner();
+        SqliteEventStorage storage = new SqliteEventStorage(dbUrl, runner);
+        DatamartStorage datamartStorage = new DatamartStorage(dbUrl);
+        EventController handler = new EventController(storage);
 
         HistoryReplayService replayService = new HistoryReplayService(
-                new HistoricalEventReader(), handler);
+                new HistoricalEventReader(), handler, storage
+        );
 
         replayService.replayFromDirectory(Paths.get(eventstorePath));
 
@@ -56,8 +57,8 @@ public class Main {
         }
 
         datamartStorage.mergeToDatamart();
-
-        System.out.println("✅ Procesamiento completado.");
+        datamartStorage.updateAvgSentiment();
+        System.out.println("Procesamiento completado.");
     }
 }
 

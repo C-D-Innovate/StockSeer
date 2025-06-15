@@ -1,7 +1,7 @@
 package es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer;
 
-import es.ulpgc.dacd.businessunit.controller.EventHandler;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.ports.in.EventStream;
+import es.ulpgc.dacd.businessunit.controller.EventController;
+import es.ulpgc.dacd.businessunit.infrastructure.ports.EventStream;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -12,9 +12,9 @@ public class ActiveMQSubscriber implements EventStream {
     private final String topicName;
     private final String clientId;
     private final String subscriptionName;
-    private final EventHandler handler;
+    private final EventController handler;
 
-    public ActiveMQSubscriber(String brokerUrl, String topicName, String clientId, String subscriptionName, EventHandler handler) {
+    public ActiveMQSubscriber(String brokerUrl, String topicName, String clientId, String subscriptionName, EventController handler) {
         this.brokerUrl = brokerUrl;
         this.topicName = topicName;
         this.clientId = clientId;
@@ -31,7 +31,7 @@ public class ActiveMQSubscriber implements EventStream {
             setupListener(consumer);
 
         } catch (JMSException e) {
-            System.err.println("❌ Error inicializando suscripción a ActiveMQ: " + e.getMessage());
+            System.err.println("Error inicializando suscripción a ActiveMQ: " + e.getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ public class ActiveMQSubscriber implements EventStream {
                     String json = textMessage.getText();
                     handler.handle(topicName, json);
                 } catch (JMSException e) {
-                    System.err.println("❌ Error al leer mensaje: " + e.getMessage());
+                    System.err.println("Error al leer mensaje: " + e.getMessage());
                 }
             }
         });

@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.businessunit.application;
 
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.ports.in.EventStream;
+import es.ulpgc.dacd.businessunit.infrastructure.ports.EventStream;
 
 public class RealTimeSyncService {
 
@@ -11,7 +11,7 @@ public class RealTimeSyncService {
     }
 
     public void start() {
-        System.out.println("📡 Iniciando RealTimeSyncService...");
+        System.out.println("Iniciando RealTimeSyncService...");
         eventStream.start();
     }
 }
