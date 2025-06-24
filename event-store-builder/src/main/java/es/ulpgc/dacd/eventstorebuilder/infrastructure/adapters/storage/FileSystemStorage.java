@@ -2,6 +2,8 @@ package es.ulpgc.dacd.eventstorebuilder.infrastructure.adapters.storage;
 
 import es.ulpgc.dacd.eventstorebuilder.domain.model.Event;
 import es.ulpgc.dacd.eventstorebuilder.infrastructure.port.EventStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class FileSystemStorage implements EventStorage {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileSystemStorage.class);
 
     private static final String BASE_DIR = "eventstore";
     private static final DateTimeFormatter DATE_FORMAT =
@@ -31,7 +35,7 @@ public class FileSystemStorage implements EventStorage {
         try {
             Files.createDirectories(path.getParent());
         } catch (IOException e) {
-            System.err.println("❌ Error al crear directorios: " + path.getParent());
+            logger.error("Error al crear directorios: {}", path.getParent(), e);
         }
     }
 
@@ -42,7 +46,7 @@ public class FileSystemStorage implements EventStorage {
             writer.write(json);
             writer.newLine();
         } catch (IOException e) {
-            System.err.println("❌ Error al escribir evento en archivo: " + path);
+            logger.error("Error al escribir evento en archivo: {}", path, e);
         }
     }
 }

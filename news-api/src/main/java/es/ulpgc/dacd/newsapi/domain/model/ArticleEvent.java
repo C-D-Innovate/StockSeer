@@ -10,18 +10,10 @@ public class ArticleEvent {
     private final Instant publishedAt;
     private final String content;
     private final String title;
-    private final String fullContent;  // ← NUEVO
+    private final String fullContent;
 
-    public ArticleEvent(
-            String topic,
-            String ss,
-            Instant ts,
-            String url,
-            Instant publishedAt,
-            String content,
-            String title,
-            String fullContent      // ← NUEVO
-    ) {
+    public ArticleEvent(String topic, String ss, Instant ts, String url, Instant publishedAt,
+                        String content, String title, String fullContent) {
         this.topic = topic;
         this.ss = ss;
         this.ts = ts;
@@ -29,38 +21,37 @@ public class ArticleEvent {
         this.publishedAt = publishedAt;
         this.content = content;
         this.title = title;
-        this.fullContent = fullContent;  // ← ASIGNACIÓN
+        this.fullContent = fullContent;
     }
 
-    public ArticleEvent(
-            String url,
-            Instant publishedAt,
-            String content,
-            String title,
-            String fullContent      // ← NUEVO
-    ) {
-        this(url, null, null, url, publishedAt, content, title, fullContent);
+    public String getTopic() { return topic; }
+
+    public String getSs() {
+        return ss;
     }
 
-    // — Getters —
-    public String getTopic()      { return topic; }
-    public String getSs()         { return ss; }
-    public Instant getTs()        { return ts; }
-    public String getUrl()        { return url; }
-    public Instant getPublishedAt() { return publishedAt; }
-    public String getContent()    { return content; }
-    public String getTitle()      { return title; }
-    public String getFullContent(){ return fullContent; }  // ← NUEVO
-
-    @Override
-    public String toString() {
-        return "ArticleEvent{" +
-                "topic='" + topic + '\'' +
-                ", ss='" + ss + '\'' +
-                ", ts=" + ts +
-                ", title='" + title + '\'' +
-                ", url='" + url + '\'' +
-                ", fullContent='" + (fullContent != null ? "[LONG TEXT]" : "null") + '\'' +
-                '}';
+    public Instant getTs() {
+        return ts;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public Instant getPublishedAt() {
+        return publishedAt;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getFullContent() {
+        return fullContent;
+    }
+
 }

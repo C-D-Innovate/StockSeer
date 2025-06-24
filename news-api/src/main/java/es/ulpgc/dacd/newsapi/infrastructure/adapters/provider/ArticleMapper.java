@@ -21,14 +21,6 @@ public class ArticleMapper {
             Instant publishedAt = Instant.parse(article.getPublishedAt());
             Instant ts = Instant.now().atZone(ZoneOffset.UTC).minusDays(1).toInstant();
 
-            String fullContent;
-            try {
-                fullContent = PythonScriptRunner.extractFullContent(article.getUrl());
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "No se pudo extraer fullContent, usando content breve", e);
-                fullContent = article.getContent();
-            }
-
             return new ArticleEvent(
                     topic,
                     sourceSystem,
@@ -37,7 +29,7 @@ public class ArticleMapper {
                     publishedAt,
                     article.getContent(),
                     article.getTitle(),
-                    fullContent
+                    null
             );
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error mapeando article: " + article.getUrl(), e);

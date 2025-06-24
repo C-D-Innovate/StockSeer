@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ;
 
 public class JmsConfig {
     public final String brokerUrl;

@@ -1,7 +1,7 @@
-package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEventSerializer;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArticleEventSerializer;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
 
 import java.util.List;
@@ -35,11 +35,6 @@ public class ArticleEventPublisher implements StoragePort {
     @Override
     public int saveArticles(List<ArticleEvent> articles) {
         return (int) articles.stream().filter(this::saveArticle).count();
-    }
-
-    @Override
-    public List<ArticleEvent> getAllArticles() {
-        throw new UnsupportedOperationException("El publisher no soporta lectura");
     }
 
     @Override

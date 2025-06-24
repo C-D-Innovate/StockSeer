@@ -4,10 +4,10 @@ import com.kwabenaberko.newsapilib.models.request.EverythingRequest;
 
 import java.time.Instant;
 
-public class NewsApiRequestBuilder {
+public class NewsApiRequest {
     private final String language;
 
-    public NewsApiRequestBuilder(String language) {
+    public NewsApiRequest(String language) {
         this.language = language;
     }
 

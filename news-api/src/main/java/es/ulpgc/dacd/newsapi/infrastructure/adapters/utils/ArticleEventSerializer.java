@@ -1,9 +1,10 @@
-package es.ulpgc.dacd.newsapi.domain.model;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
+import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 
 import java.time.Instant;
 
