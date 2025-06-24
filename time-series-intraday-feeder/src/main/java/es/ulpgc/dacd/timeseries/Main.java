@@ -1,14 +1,13 @@
 package es.ulpgc.dacd.timeseries;
 
-import com.crazzyghost.alphavantage.parameters.Interval;
-import com.crazzyghost.alphavantage.parameters.OutputSize;
-
 import es.ulpgc.dacd.timeseries.controller.IntradayFetcher;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.provider.AlphaVantageAPI;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.SqliteManager;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActivemqPublisher;
-import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.StockDataProvider;
-import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.StockDataStorage;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.provider.AlphaVantageIntradayFetcher;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.SQLite.SqliteManager;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ.ActivemqPublisher;
+import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.IntradayStockEventFetcher;
+import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.OpeningClosingEventSaver;
+import es.ulpgc.dacd.timeseries.infrastructure.utils.DateParser;
+import es.ulpgc.dacd.timeseries.infrastructure.utils.TimestampParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,25 +21,30 @@ public class Main {
         try {
             Map<String, String> argsValues = loadArgsFromFile(args[0]);
 
-            StockDataProvider provider = new AlphaVantageAPI(
+            IntradayStockEventFetcher provider = new AlphaVantageIntradayFetcher(
                     argsValues.get("API_KEY")
             );
 
-            StockDataStorage storage;
+            OpeningClosingEventSaver storage;
             if (argsValues.get("STORAGE_MODE").equalsIgnoreCase("activemq")) {
                 storage = new ActivemqPublisher(
                         argsValues.get("BROKER_URL"),
-                        argsValues.get("TOPIC_NAME")
+                        argsValues.get("TOPIC_NAME"),
+                        DateParser.parse(argsValues.get("TODAY"))
                 );
             } else {
-                storage = new SqliteManager(argsValues.get("DB_URL"));
+                storage = new SqliteManager(
+                        argsValues.get("DB_URL"),
+                        DateParser.parse(argsValues.get("TODAY"))
+                );
             }
 
             IntradayFetcher fetcher = new IntradayFetcher(
                     argsValues.get("SYMBOL"),
                     provider,
                     storage,
-                    argsValues.get("DB_URL")
+                    argsValues.get("DB_URL"),
+                    TimestampParser.parseMarketClose(argsValues.get("MARKET_CLOSE"))
             );
 
             fetcher.start();
