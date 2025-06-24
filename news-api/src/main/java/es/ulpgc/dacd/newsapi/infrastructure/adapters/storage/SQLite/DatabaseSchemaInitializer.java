@@ -10,7 +10,6 @@ public class DatabaseSchemaInitializer {
             CREATE TABLE IF NOT EXISTS articles (
                 url TEXT PRIMARY KEY,
                 publishedAt TEXT,
-                content TEXT,
                 title TEXT,
                 fullContent TEXT
             )
@@ -22,4 +21,3 @@ public class DatabaseSchemaInitializer {
         }
     }
 }
-

@@ -5,11 +5,11 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import java.util.logging.Logger;
 
-public class JmsPublisher {
-    private static final Logger LOGGER = Logger.getLogger(JmsPublisher.class.getName());
+public class MessageBrokerSender {
+    private static final Logger LOGGER = Logger.getLogger(MessageBrokerSender.class.getName());
     private final ConnectionFactory connectionFactory;
 
-    public JmsPublisher(String brokerUrl) {
+    public MessageBrokerSender(String brokerUrl) {
         this.connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
     }
 

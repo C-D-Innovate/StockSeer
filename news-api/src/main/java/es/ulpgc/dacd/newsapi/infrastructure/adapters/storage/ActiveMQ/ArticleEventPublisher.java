@@ -11,20 +11,22 @@ import java.util.logging.Logger;
 public class ArticleEventPublisher implements StoragePort {
     private static final Logger LOGGER = Logger.getLogger(ArticleEventPublisher.class.getName());
 
-    private final JmsPublisher jmsPublisher;
-    private final JmsConfig config;
+    private final MessageBrokerSender jmsPublisher;
+    private final String queueName;
+    private final String topicName;
 
-    public ArticleEventPublisher(JmsConfig config) {
-        this.config = config;
-        this.jmsPublisher = new JmsPublisher(config.brokerUrl);
+    public ArticleEventPublisher(String brokerUrl, String queueName, String topicName) {
+        this.queueName = queueName;
+        this.topicName = topicName;
+        this.jmsPublisher = new MessageBrokerSender(brokerUrl);
     }
 
     @Override
     public boolean saveArticle(ArticleEvent article) {
         try {
             String json = ArticleEventSerializer.toJson(article);
-            jmsPublisher.publishToQueue(config.queueName, json);
-            jmsPublisher.publishToTopic(config.topicName, json);
+            jmsPublisher.publishToQueue(queueName, json);
+            jmsPublisher.publishToTopic(topicName, json);
             return true;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error publicando artículo", e);

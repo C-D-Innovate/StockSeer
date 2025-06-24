@@ -5,7 +5,6 @@ import es.ulpgc.dacd.newsapi.controller.ArticleFetchController;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.NewsApiFetcher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ.ArticleEventPublisher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite.DatabaseManager;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ.JmsConfig;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArgsParser;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
@@ -48,12 +47,12 @@ public class Main {
             );
 
             StoragePort storage = storageTarget.equals("broker")
-                    ? new ArticleEventPublisher(new JmsConfig(brokerUrl, queueName, topicName))
+                    ? new ArticleEventPublisher(brokerUrl, queueName, topicName)
                     : new DatabaseManager(dbUrl);
 
             ArticleFetchController fetcher = new ArticleFetchController(newsApi, storage, topicName);
 
-            CompletableFuture<Void> future = fetcher.fetchToday(query);
+            CompletableFuture<Void> future = fetcher.fetchAndStoreYesterdayArticles(query);
             future.join();
 
             logger.info("Fetch completado. Cerrando almacenamiento.");

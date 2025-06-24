@@ -15,13 +15,11 @@ public class PythonScriptRunner {
             System.getenv().getOrDefault("PYTHON_EXECUTABLE", "python3");
 
     public static String extractFullContent(String articleUrl) throws IOException, InterruptedException {
-        LOGGER.info("[DEBUG] PYTHON_EXECUTABLE constant = " + PYTHON_EXECUTABLE);
-        LOGGER.info("[DEBUG] PYTHON_EXECUTABLE env var = " + System.getenv("PYTHON_EXECUTABLE"));
+        LOGGER.info("\nEjecutando script Python para extraer contenido completo...\n");
 
         URL resource = PythonScriptRunner.class.getResource("/extract_full_content.py");
-        LOGGER.info("[DEBUG] Resource URL = " + resource);
         if (resource == null) {
-            throw new FileNotFoundException("No se encontró extract_full_content.py en resources");
+            throw new FileNotFoundException("No se encontró extract_full_content.py en recursos");
         }
 
         File tempScript = File.createTempFile("extract_full_content", ".py");
@@ -29,23 +27,16 @@ public class PythonScriptRunner {
             Files.copy(in, tempScript.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
         tempScript.setExecutable(true);
-        LOGGER.info("[DEBUG] Temp script path = " + tempScript.getAbsolutePath());
-        LOGGER.info("[DEBUG] Exists = " + tempScript.exists() + ", Executable = " + tempScript.canExecute());
-
-        String cmd = PYTHON_EXECUTABLE + " " + tempScript.getAbsolutePath() + " " + articleUrl;
-        LOGGER.info("[DEBUG] About to run: " + cmd);
 
         ProcessBuilder pb = new ProcessBuilder(PYTHON_EXECUTABLE, tempScript.getAbsolutePath(), articleUrl);
         pb.redirectErrorStream(false);
 
         Process process = pb.start();
-        LOGGER.info("[DEBUG] Process started: " + process);
 
         StringBuilder stdout = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                LOGGER.info("[PY-OUT] " + line);
                 stdout.append(line).append("\n");
             }
         }
@@ -54,22 +45,23 @@ public class PythonScriptRunner {
         try (BufferedReader readerErr = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
             String lineErr;
             while ((lineErr = readerErr.readLine()) != null) {
-                LOGGER.warning("[PY-ERR] " + lineErr);
                 stderr.append(lineErr).append("\n");
             }
         }
 
         boolean finished = process.waitFor(15, TimeUnit.SECONDS);
         int exitCode = process.exitValue();
-        LOGGER.info("[DEBUG] Process finished = " + finished + ", exitCode = " + exitCode);
 
         if (!finished) {
-            throw new RuntimeException("El script Python NO finalizó en 60 segundos");
+            throw new RuntimeException("El script Python NO finalizó en 15 segundos. Se pasa al siguiente artículo.\n");
         }
         if (exitCode != 0) {
-            throw new RuntimeException("Error al ejecutar el script Python. Código: " + exitCode);
+            LOGGER.warning("\nNo se ha podido acceder al contenido entero de la noticia por cookies, se utilizará el contenido breve.\n");
+            tempScript.delete();
+            return "";
         }
 
+        LOGGER.info("\nScript Python ejecutado correctamente. FullContent abastecido.\n");
         tempScript.delete();
         return stdout.toString().trim();
     }

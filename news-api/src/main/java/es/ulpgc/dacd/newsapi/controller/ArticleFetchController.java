@@ -21,7 +21,7 @@ public class ArticleFetchController {
         this.enricher = new ArticleEnricher(topicName);
     }
 
-    public CompletableFuture<Void> fetchToday(String query) {
+    public CompletableFuture<Void> fetchAndStoreYesterdayArticles(String query) {
         var range = FetchDateCalculator.yesterdayUtcRange();
         return newsApi.fetchArticles(query, range.from(), range.to())
                 .thenAccept(this::processAndStoreArticles);
