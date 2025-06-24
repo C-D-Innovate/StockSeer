@@ -31,9 +31,9 @@ public class ActiveMQMessageSender {
             String json = serializer.serialize(event);
             TextMessage message = session.createTextMessage(json);
             producer.send(topic, message);
-            logger.info("Evento publicado: " + json);
+            logger.info("Evento publicado: " + json + "\n");
         } catch (JMSException e) {
-            logger.severe("Error al publicar evento: " + e.getMessage());
+            logger.severe("Error al publicar evento: " + e.getMessage()+ "\n");
         }
     }
 }

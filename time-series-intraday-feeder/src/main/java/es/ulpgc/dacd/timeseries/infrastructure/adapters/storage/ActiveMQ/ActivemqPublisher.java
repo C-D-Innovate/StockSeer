@@ -29,11 +29,11 @@ public class ActivemqPublisher implements OpeningClosingEventSaver {
         List<AlphaVantageEvent> filtered = MarketHoursFilter.filterExactTodayOpeningAndClosing(data, today);
 
         if (filtered.isEmpty()) {
-            logger.info("[ActiveMQ] No se encontraron eventos de apertura ni cierre para publicar.");
+            logger.info("[ActiveMQ] No se encontraron eventos de apertura ni cierre para publicar.\n");
             return;
         }
 
         messageSender.send(filtered);
-        logger.info("[ActiveMQ] Eventos publicados correctamente");
+        logger.info("[ActiveMQ] Eventos publicados correctamente\n");
     }
 }

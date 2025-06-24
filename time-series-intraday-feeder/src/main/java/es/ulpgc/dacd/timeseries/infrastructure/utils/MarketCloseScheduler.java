@@ -39,6 +39,7 @@ public class MarketCloseScheduler {
                     } finally {
                         timer.cancel();
                         logger.info("[Scheduler] Timer detenido tras la ejecución.");
+                        System.exit(0);
                     }
                 }
             }

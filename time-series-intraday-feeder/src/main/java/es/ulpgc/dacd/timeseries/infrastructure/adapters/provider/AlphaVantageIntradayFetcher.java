@@ -30,7 +30,7 @@ public class AlphaVantageIntradayFetcher implements IntradayStockEventFetcher {
 
             return responseProcessor.process(response, symbol);
         } catch (Exception e) {
-            logger.warning("Error al recuperar datos para el símbolo: " + symbol + " → " + e.getMessage());
+            logger.warning("Error al recuperar datos para el símbolo: " + symbol + " → " + e.getMessage()+ "\n");
             return List.of();
         }
     }

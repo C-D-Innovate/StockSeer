@@ -7,8 +7,10 @@ import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.logging.Logger;
 
 public class EventJsonSerializer {
+    private static final Logger logger = Logger.getLogger(EventJsonSerializer.class.getName());
     private final Gson gson;
 
     public EventJsonSerializer() {
@@ -19,7 +21,6 @@ public class EventJsonSerializer {
 
     public String serialize(AlphaVantageEvent event) {
         JsonObject json = gson.toJsonTree(event).getAsJsonObject();
-        json.addProperty("topic", "AlphaVantageEvent");
         return gson.toJson(json);
     }
 

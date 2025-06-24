@@ -4,9 +4,10 @@ import java.time.Instant;
 
 public class AlphaVantageEvent {
 
-    private final String ss = "AlphaVantage";
-    private final String symbol;
+    private final String topicName = "StockQuotes";
+    private final String ss = "AlphaVantageFeeder";
     private final Instant ts;
+    private final String symbol;
     private final double open;
     private final double high;
     private final double low;
@@ -14,8 +15,8 @@ public class AlphaVantageEvent {
     private final long volume;
 
     public AlphaVantageEvent(String symbol, Instant ts, double open, double high, double low, double close, long volume) {
-        this.symbol = symbol;
         this.ts = ts;
+        this.symbol = symbol;
         this.open = open;
         this.high = high;
         this.low = low;
@@ -51,13 +52,10 @@ public class AlphaVantageEvent {
         return volume;
     }
 
-    public String getSs() {
-        return ss;
-    }
 
     @Override
     public String toString() {
-        return String.format("AlphaVantageEvent{symbol='%s', ts=%s, open=%.2f, high=%.2f, low=%.2f, close=%.2f, volume=%d}",
-                symbol, ts, open, high, low, close, volume);
+        return String.format("AlphaVantageEvent{topic='%s', ss='%s', ts=%s, symbol='%s', open=%.2f, high=%.2f, low=%.2f, close=%.2f, volume=%d}",
+                topicName, ss, ts, symbol, open, high, low, close, volume);
     }
 }
