@@ -6,8 +6,8 @@ import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.NewsApiFetcher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ.ArticleEventPublisher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite.DatabaseManager;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArgsParser;
-import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.NewsApiPort;
-import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleProvider;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleRepository;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -39,14 +39,14 @@ public class Main {
             logger.info("Iniciando fetch de noticias para el tópico: " + topicName);
 
             NewsApiClient client = NewsApiFetcher.createApiClient(apiKey);
-            NewsApiPort newsApi = new NewsApiFetcher(
+            ArticleProvider newsApi = new NewsApiFetcher(
                     client,
                     defaultLanguage,
                     sourceSystem,
                     topicName
             );
 
-            StoragePort storage = storageTarget.equals("broker")
+            ArticleRepository storage = storageTarget.equals("broker")
                     ? new ArticleEventPublisher(brokerUrl, queueName, topicName)
                     : new DatabaseManager(dbUrl);
 
