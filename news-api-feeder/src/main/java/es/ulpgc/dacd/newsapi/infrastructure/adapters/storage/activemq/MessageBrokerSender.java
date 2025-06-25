@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.activemq;
 
 import jakarta.jms.*;
 import org.apache.activemq.ActiveMQConnectionFactory;

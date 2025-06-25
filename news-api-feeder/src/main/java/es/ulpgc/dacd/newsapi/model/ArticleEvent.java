@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.newsapi.domain.model;
+package es.ulpgc.dacd.newsapi.model;
 
 import java.time.Instant;
 

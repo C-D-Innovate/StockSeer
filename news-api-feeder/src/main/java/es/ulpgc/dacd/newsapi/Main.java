@@ -3,11 +3,11 @@ package es.ulpgc.dacd.newsapi;
 import com.kwabenaberko.newsapilib.NewsApiClient;
 import es.ulpgc.dacd.newsapi.controller.ArticleFetchController;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.NewsApiFetcher;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ.ArticleEventPublisher;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite.DatabaseManager;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.activemq.ArticleEventPublisher;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.sqlite.DatabaseManager;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArgsParser;
-import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleProvider;
-import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleRepository;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleEventFetcher;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleSaver;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -39,14 +39,14 @@ public class Main {
             logger.info("Iniciando fetch de noticias para el tópico: " + topicName);
 
             NewsApiClient client = NewsApiFetcher.createApiClient(apiKey);
-            ArticleProvider newsApi = new NewsApiFetcher(
+            ArticleEventFetcher newsApi = new NewsApiFetcher(
                     client,
                     defaultLanguage,
                     sourceSystem,
                     topicName
             );
 
-            ArticleRepository storage = storageTarget.equals("broker")
+            ArticleSaver storage = storageTarget.equals("broker")
                     ? new ArticleEventPublisher(brokerUrl, queueName, topicName)
                     : new DatabaseManager(dbUrl);
 

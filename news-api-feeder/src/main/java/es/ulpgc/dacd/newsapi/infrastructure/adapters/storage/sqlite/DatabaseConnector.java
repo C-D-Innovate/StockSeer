@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.sqlite;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

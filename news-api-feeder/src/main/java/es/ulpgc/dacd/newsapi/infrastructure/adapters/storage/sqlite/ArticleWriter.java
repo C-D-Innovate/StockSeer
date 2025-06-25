@@ -1,6 +1,6 @@
-package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.sqlite;
 
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 
 import java.sql.*;
 import java.util.List;

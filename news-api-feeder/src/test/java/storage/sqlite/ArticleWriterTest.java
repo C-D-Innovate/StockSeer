@@ -1,7 +1,7 @@
 package storage.sqlite;
 
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite.ArticleWriter;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.sqlite.ArticleWriter;
 import org.junit.jupiter.api.*;
 import java.sql.*;
 import java.time.Instant;

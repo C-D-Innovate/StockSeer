@@ -1,6 +1,6 @@
 package storage.sqlite;
 
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite.DatabaseConnector;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.sqlite.DatabaseConnector;
 import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.SQLException;

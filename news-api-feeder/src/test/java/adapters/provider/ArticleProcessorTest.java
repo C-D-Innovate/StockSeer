@@ -2,7 +2,7 @@ package adapters.provider;
 
 import com.kwabenaberko.newsapilib.models.Article;
 import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.enricher.ArticleEnricher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticleMapper;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticleProcessor;

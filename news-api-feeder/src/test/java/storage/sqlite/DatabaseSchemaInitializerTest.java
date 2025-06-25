@@ -1,6 +1,6 @@
 package storage.sqlite;
 
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite.DatabaseSchemaInitializer;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.sqlite.DatabaseSchemaInitializer;
 import org.junit.jupiter.api.*;
 import java.sql.*;
 

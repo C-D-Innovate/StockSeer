@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.enricher;
 
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 
 import java.time.Instant;
 import java.time.ZoneOffset;

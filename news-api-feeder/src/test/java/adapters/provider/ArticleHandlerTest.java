@@ -1,7 +1,7 @@
 package adapters.provider;
 
 import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticleProcessor;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticlesHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
