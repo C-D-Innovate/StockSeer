@@ -1,7 +1,7 @@
 package es.ulpgc.dacd.newsapi.controller;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.domain.service.ArticleEnricher;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.enricher.ArticleEnricher;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.FetchDateCalculator;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleProvider;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleRepository;

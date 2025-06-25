@@ -1,7 +1,6 @@
-package es.ulpgc.dacd.newsapi.domain.service;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.enricher;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.PythonScriptRunner;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -19,7 +18,7 @@ public class ArticleEnricher {
     public ArticleEvent enrich(ArticleEvent brief) {
         String fullContent;
         try {
-            fullContent = PythonScriptRunner.extractFullContent(brief.getUrl());
+            fullContent = PythonEnricherRunner.extractFullContent(brief.getUrl());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING,
                     "No se pudo extraer fullContent de " + brief.getUrl() +

@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.newsapi.infrastructure.adapters.provider;
+package es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.enricher;
 
 import java.io.*;
 import java.net.URL;
@@ -7,16 +7,16 @@ import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class PythonScriptRunner {
+public class PythonEnricherRunner {
 
-    private static final Logger LOGGER = Logger.getLogger(PythonScriptRunner.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PythonEnricherRunner.class.getName());
     private static final String PYTHON_EXECUTABLE =
             System.getenv().getOrDefault("PYTHON_EXECUTABLE", "python3");
 
     public static String extractFullContent(String articleUrl) throws IOException, InterruptedException {
         LOGGER.info("\nEjecutando script Python para extraer contenido completo...\n");
 
-        URL resource = PythonScriptRunner.class.getResource("/extract_full_content.py");
+        URL resource = PythonEnricherRunner.class.getResource("/extract_full_content.py");
         if (resource == null) {
             throw new FileNotFoundException("No se encontró extract_full_content.py en recursos");
         }
