@@ -2,7 +2,7 @@ package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import javax.jms.*;
+import jakarta.jms.*;
 
 public class ActiveMQConnectionManager {
     private final Connection connection;

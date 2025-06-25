@@ -5,7 +5,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
-import javax.jms.*;
+import jakarta.jms.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
