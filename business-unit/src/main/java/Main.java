@@ -1,21 +1,26 @@
-import es.ulpgc.dacd.businessunit.application.HistoryReplayService;
-import es.ulpgc.dacd.businessunit.application.RealTimeSyncService;
+import es.ulpgc.dacd.businessunit.application.HistoricalEventProcessor;
+import es.ulpgc.dacd.businessunit.application.RealTimeEventStarter;
 import es.ulpgc.dacd.businessunit.controller.EventController;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.HistoricalEventReader;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.ActiveMQSubscriber;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.PythonScriptRunner;
-import es.ulpgc.dacd.businessunit.infrastructure.ports.EventStorage;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.DatamartStorage;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.SqliteEventStorage;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.HistoricalEventReader;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.CalculateLabel;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.PythonCalculateLabelRunner;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.PythonExecutor;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datamart.DatamartStorageManager;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake.SQLiteManager;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.ArgsParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.Map;
 
 public class Main {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println("Debes proporcionar la ruta al archivo de configuración.");
+            log.error("Debes proporcionar la ruta al archivo de configuración.");
             return;
         }
 
@@ -28,37 +33,45 @@ public class Main {
         String clientId = config.get("CLIENT_ID");
 
         if (topicsStr == null || topicsStr.isBlank()) {
-            System.err.println("No se ha configurado la clave TOPICS en el archivo.");
+            log.error("No se ha configurado la clave TOPICS en el archivo.");
             return;
         }
 
-        PythonScriptRunner runner = new PythonScriptRunner();
-        SqliteEventStorage storage = new SqliteEventStorage(dbUrl, runner);
-        DatamartStorage datamartStorage = new DatamartStorage(dbUrl);
-        EventController handler = new EventController(storage);
+        PythonExecutor pythonExecutor = new PythonExecutor();
+        PythonCalculateLabelRunner labelRunner = new PythonCalculateLabelRunner(pythonExecutor);
+        CalculateLabel label = new CalculateLabel(labelRunner);
 
-        HistoryReplayService replayService = new HistoryReplayService(
-                new HistoricalEventReader(), handler, storage
-        );
+        try (SQLiteManager storage = new SQLiteManager(dbUrl, label)) {
+            DatamartStorageManager datamartStorage = new DatamartStorageManager(dbUrl);
+            EventController handler = new EventController(storage);
 
-        replayService.replayFromDirectory(Paths.get(eventstorePath));
-
-        String[] topics = topicsStr.split(",");
-        for (String topic : topics) {
-            topic = topic.trim();
-            String subscriptionName = topic.replace(".", "_") + "_subscriber";
-
-            ActiveMQSubscriber subscriber = new ActiveMQSubscriber(
-                    brokerUrl, topic, clientId + "_" + topic, subscriptionName, handler
+            HistoricalEventProcessor replayService = new HistoricalEventProcessor(
+                    new HistoricalEventReader(), handler, storage
             );
+            replayService.replayFromDirectory(Paths.get(eventstorePath));
 
-            RealTimeSyncService realTimeService = new RealTimeSyncService(subscriber);
-            realTimeService.start();
+            String[] topics = topicsStr.split(",");
+            for (String topic : topics) {
+                topic = topic.trim();
+                String subscriptionName = topic.replace(".", "_") + "_subscriber";
+
+                ActiveMQSubscriber subscriber = new ActiveMQSubscriber(
+                        brokerUrl, topic, clientId + "_" + topic, subscriptionName, handler
+                );
+
+                RealTimeEventStarter realTimeService = new RealTimeEventStarter(subscriber);
+                realTimeService.start();
+                log.info("Suscripción activa para el tópico: {}", topic);
+            }
+
+            datamartStorage.mergeToDatamart();
+            datamartStorage.updateAvgSentiment();
+
+            log.info("Suscripciones activas. Esperando eventos en tiempo real...");
+            Thread.currentThread().join();
+
+        } catch (Exception e) {
+            log.error("Error en la ejecución: {}", e.getMessage(), e);
         }
-
-        datamartStorage.mergeToDatamart();
-        datamartStorage.updateAvgSentiment();
-        System.out.println("Procesamiento completado.");
     }
 }
-

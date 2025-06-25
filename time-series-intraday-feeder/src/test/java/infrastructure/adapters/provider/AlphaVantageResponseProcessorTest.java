@@ -2,7 +2,7 @@ package infrastructure.adapters.provider;
 
 import com.crazzyghost.alphavantage.timeseries.response.TimeSeriesResponse;
 import com.crazzyghost.alphavantage.timeseries.response.StockUnit;
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 import es.ulpgc.dacd.timeseries.infrastructure.adapters.provider.AlphaVantageResponseProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,6 @@
 package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArticleEventSerializer;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleRepository;
 
 import java.util.List;

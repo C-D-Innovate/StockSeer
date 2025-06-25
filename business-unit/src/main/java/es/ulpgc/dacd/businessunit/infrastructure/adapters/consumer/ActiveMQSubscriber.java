@@ -3,10 +3,14 @@ package es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer;
 import es.ulpgc.dacd.businessunit.controller.EventController;
 import es.ulpgc.dacd.businessunit.infrastructure.ports.EventStream;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 
 public class ActiveMQSubscriber implements EventStream {
+
+    private static final Logger logger = LoggerFactory.getLogger(ActiveMQSubscriber.class);
 
     private final String brokerUrl;
     private final String topicName;
@@ -29,9 +33,10 @@ public class ActiveMQSubscriber implements EventStream {
             MessageConsumer consumer = createDurableSubscriber(session);
 
             setupListener(consumer);
+            logger.info("Suscripción a ActiveMQ iniciada en topic '{}'.", topicName);
 
         } catch (JMSException e) {
-            System.err.println("Error inicializando suscripción a ActiveMQ: " + e.getMessage());
+            logger.error("Error inicializando suscripción a ActiveMQ: {}", e.getMessage(), e);
         }
     }
 
@@ -59,8 +64,10 @@ public class ActiveMQSubscriber implements EventStream {
                     String json = textMessage.getText();
                     handler.handle(topicName, json);
                 } catch (JMSException e) {
-                    System.err.println("Error al leer mensaje: " + e.getMessage());
+                    logger.error("Error al leer mensaje del topic '{}': {}", topicName, e.getMessage(), e);
                 }
+            } else {
+                logger.warn("Mensaje recibido no es de tipo TextMessage.");
             }
         });
     }

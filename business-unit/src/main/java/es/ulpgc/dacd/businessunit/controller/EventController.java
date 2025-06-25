@@ -1,11 +1,15 @@
 package es.ulpgc.dacd.businessunit.controller;
 
-import es.ulpgc.dacd.businessunit.domain.model.MarketEvent;
-import es.ulpgc.dacd.businessunit.domain.model.NewsEvent;
+import es.ulpgc.dacd.businessunit.models.MarketEvent;
+import es.ulpgc.dacd.businessunit.models.NewsEvent;
 import es.ulpgc.dacd.businessunit.infrastructure.ports.EventStorage;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.EventParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
     private final EventStorage storage;
     private final EventParser parser;
@@ -24,21 +28,20 @@ public class EventController {
                 if (event != null) {
                     storage.saveMarketEvent(event);
                 } else {
-                    System.err.println("[WARN] Evento de mercado nulo tras parseo.");
+                    logger.warn("Evento de mercado nulo tras parseo. Topic: {}", topic);
                 }
             } else if (lowerTopic.contains("news") || lowerTopic.contains("articles")) {
                 NewsEvent event = parser.parseNewsEvent(json);
                 if (event != null) {
                     storage.saveNewsEvent(event);
                 } else {
-                    System.err.println("[WARN] Evento de noticias nulo tras parseo.");
+                    logger.warn("Evento de noticias nulo tras parseo. Topic: {}", topic);
                 }
             } else {
-                System.err.println("[WARN] Topic desconocido: " + topic);
+                logger.warn("Topic desconocido: {}", topic);
             }
         } catch (Exception e) {
-            System.err.println("[ERROR] Error al manejar evento: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error al manejar evento para el topic {}: {}", topic, e.getMessage(), e);
         }
     }
 }

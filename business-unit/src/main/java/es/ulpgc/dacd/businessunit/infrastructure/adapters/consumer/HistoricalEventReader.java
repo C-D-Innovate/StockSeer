@@ -3,7 +3,9 @@ package es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.SqliteEventStorage;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake.SQLiteManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,44 +16,58 @@ import java.util.List;
 
 public class HistoricalEventReader {
 
-    public List<String> readUnprocessedEvents(Path filePath, SqliteEventStorage storage) {
+    private static final Logger logger = LoggerFactory.getLogger(HistoricalEventReader.class);
+
+    public List<String> readUnprocessedEvents(Path filePath, SQLiteManager storage, String topic) {
         if (!Files.exists(filePath)) {
-            System.err.println("[WARN] Archivo no encontrado: " + filePath);
+            logger.warn("Archivo no encontrado: {}", filePath);
             return Collections.emptyList();
         }
 
         if (isFileAlreadyProcessed(filePath, storage)) {
-            System.out.println("Archivo ya procesado, se omite: " + filePath.getFileName());
+            logger.info("Archivo ya procesado, se omite: {} (topic: {})", filePath.getFileName(), topic);
             return Collections.emptyList();
         }
 
         try (BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
             return reader.lines().toList();
         } catch (IOException e) {
-            System.err.println("[ERROR] Error leyendo archivo " + filePath + ": " + e.getMessage());
+            logger.error("Error leyendo archivo {}: {}", filePath, e.getMessage(), e);
             return Collections.emptyList();
         }
     }
 
-    private boolean isFileAlreadyProcessed(Path filePath, SqliteEventStorage storage) {
+
+    private boolean isFileAlreadyProcessed(Path filePath, SQLiteManager storage) {
         try (BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
             String firstLine = reader.readLine();
             if (firstLine == null) return true;
 
             JsonObject json = JsonParser.parseString(firstLine).getAsJsonObject();
 
-            if (json.has("topic") && "Articles".equals(json.get("topic").getAsString()) && json.has("url")) {
-                JsonElement urlElement = json.get("url");
-                if (!urlElement.isJsonNull()) {
-                    String url = urlElement.getAsString();
-                    return storage.containsUrl(url);
+            if (json.has("topic")) {
+                String topic = json.get("topic").getAsString();
+
+                if ("Articles".equalsIgnoreCase(topic) && json.has("url")) {
+                    JsonElement urlElement = json.get("url");
+                    if (!urlElement.isJsonNull()) {
+                        String url = urlElement.getAsString();
+                        return storage.containsUrl(url);
+                    }
+                }
+
+                if ("AlphaVantageEvent".equalsIgnoreCase(topic) && json.has("symbol") && json.has("ts")) {
+                    String symbol = json.get("symbol").getAsString();
+                    String ts = json.get("ts").getAsString();
+                    return storage.containsMarket(symbol, ts);
                 }
             }
-            return true;
+
+            return false;
 
         } catch (Exception e) {
-            System.err.println("[WARN] No se pudo verificar el archivo: " + filePath.getFileName() + " → " + e.getMessage());
-            return true;
+            logger.warn("No se pudo verificar el archivo {} → {}", filePath.getFileName(), e.getMessage(), e);
+            return false;
         }
     }
 }

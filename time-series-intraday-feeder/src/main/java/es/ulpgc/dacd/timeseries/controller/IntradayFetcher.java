@@ -1,63 +1,57 @@
 package es.ulpgc.dacd.timeseries.controller;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.util.TimeUtils;
-import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.StockDataProvider;
-import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.StockDataStorage;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.IntradayStockEventFetcher;
+import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.OpeningClosingEventSaver;
+import es.ulpgc.dacd.timeseries.infrastructure.utils.MarketCloseScheduler;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.logging.Logger;
 
 public class IntradayFetcher {
 
+    private static final Logger logger = Logger.getLogger(IntradayFetcher.class.getName());
+
     private final String symbol;
-    private final StockDataProvider dataProvider;
-    private final StockDataStorage dataStorage;
+    private final IntradayStockEventFetcher dataProvider;
+    private final OpeningClosingEventSaver dataStorage;
     private final String context;
+    private final LocalTime marketClose;
 
     private final ZoneId zone = ZoneId.of("America/New_York");
-    private final LocalTime marketClose = LocalTime.of(13, 32);
 
-    public IntradayFetcher(String symbol, StockDataProvider dataProvider, StockDataStorage dataStorage, String context) {
+    public IntradayFetcher(String symbol,
+                           IntradayStockEventFetcher dataProvider,
+                           OpeningClosingEventSaver dataStorage,
+                           String context,
+                           LocalTime marketClose) {
         this.symbol = symbol;
         this.dataProvider = dataProvider;
         this.dataStorage = dataStorage;
         this.context = context;
+        this.marketClose = marketClose;
     }
 
     public void start() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                LocalTime now = LocalTime.now(zone).withSecond(0);
-
-                if (TimeUtils.isWithinOneMinuteOf(now, marketClose)) {
-                    fetchAndStore();
-                    timer.cancel();
-                } else {
-                    System.out.println("[INFO] Esperando cierre del mercado. Hora actual: " + now);
-                }
-            }
-        }, 0, 60_000);
+        logger.info("[Fetcher] Iniciando espera hasta el cierre del mercado para símbolo: " + symbol + "\n");
+        MarketCloseScheduler scheduler = new MarketCloseScheduler(zone, marketClose);
+        scheduler.start(this::fetchAndStore);
     }
 
     private void fetchAndStore() {
         try {
-            System.out.println("[INFO] Solicitando datos para: " + symbol);
+            logger.info("[Fetcher] Solicitando datos de AlphaVantage para: " + symbol + "\n");
             List<AlphaVantageEvent> stockData = dataProvider.fetch(symbol);
 
             if (stockData != null && !stockData.isEmpty()) {
                 dataStorage.saveOpeningAndClosingEvents(stockData, context);
-                System.out.println("[INFO] Datos procesados correctamente.\n");
             } else {
-                System.err.println("[WARN] No se recibieron datos del proveedor.");
+                logger.warning("[Fetcher] No se recibieron datos del proveedor para el símbolo: " + symbol + "\n");
             }
         } catch (Exception e) {
-            System.err.println("[ERROR] Error durante la ejecución del fetch: " + e.getMessage());
+            logger.severe("[Fetcher] Error durante el proceso de obtención o guardado de datos: " + e.getMessage() + "\n");
         }
     }
 }

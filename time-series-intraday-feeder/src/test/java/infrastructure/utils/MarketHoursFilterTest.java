@@ -1,7 +1,7 @@
 package infrastructure.utils;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
-import es.ulpgc.dacd.timeseries.infrastructure.utils.MarketHoursFilter;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.MarketHoursFilter;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ;
+package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 

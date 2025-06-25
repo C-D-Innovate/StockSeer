@@ -1,7 +1,7 @@
-package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.SQLite;
+package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.sqlite;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
-import es.ulpgc.dacd.timeseries.infrastructure.utils.EventJsonSerializer;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq.EventJsonSerializer;
 
 import java.sql.*;
 import java.util.List;

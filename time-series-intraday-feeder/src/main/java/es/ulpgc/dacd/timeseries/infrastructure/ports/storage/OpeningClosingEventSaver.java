@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.timeseries.infrastructure.ports.storage;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 
 import java.util.List;
 

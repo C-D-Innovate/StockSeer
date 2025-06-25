@@ -1,6 +1,6 @@
-package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.SQLite;
+package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.sqlite;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

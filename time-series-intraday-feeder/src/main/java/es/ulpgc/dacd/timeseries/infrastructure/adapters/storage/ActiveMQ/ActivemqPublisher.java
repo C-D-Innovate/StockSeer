@@ -1,9 +1,8 @@
-package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ;
+package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.OpeningClosingEventSaver;
-import es.ulpgc.dacd.timeseries.infrastructure.utils.EventJsonSerializer;
-import es.ulpgc.dacd.timeseries.infrastructure.utils.MarketHoursFilter;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.MarketHoursFilter;
 
 import java.time.LocalDate;
 import java.util.List;

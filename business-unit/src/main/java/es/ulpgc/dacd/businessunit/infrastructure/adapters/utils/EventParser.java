@@ -3,12 +3,17 @@ package es.ulpgc.dacd.businessunit.infrastructure.adapters.utils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import es.ulpgc.dacd.businessunit.domain.model.MarketEvent;
-import es.ulpgc.dacd.businessunit.domain.model.NewsEvent;
+import es.ulpgc.dacd.businessunit.models.MarketEvent;
+import es.ulpgc.dacd.businessunit.models.NewsEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
 public class EventParser {
+    private static final Logger logger = LoggerFactory.getLogger(EventParser.class);
+
     private final ObjectMapper mapper;
 
     public EventParser() {
@@ -25,7 +30,7 @@ public class EventParser {
             Instant ts = Instant.parse(root.get("ts").asText());
             return new MarketEvent(symbol, price, volume, ts);
         } catch (Exception e) {
-            System.err.println("[WARN] Error parseando MarketEvent: " + e.getMessage());
+            logger.warn("[WARN] Error parseando MarketEvent: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -41,7 +46,7 @@ public class EventParser {
 
             return new NewsEvent(url, content, ts, fullContent, null);
         } catch (Exception e) {
-            System.err.println("[WARN] Error parseando NewsEvent: " + e.getMessage());
+            logger.warn("[WARN] Error parseando NewsEvent: {}", e.getMessage(), e);
             return null;
         }
     }

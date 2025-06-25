@@ -1,7 +1,6 @@
-package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ;
+package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
-import es.ulpgc.dacd.timeseries.infrastructure.utils.EventJsonSerializer;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 
 import javax.jms.*;
 import java.util.List;
