@@ -3,7 +3,7 @@ package es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ;
 import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
 import es.ulpgc.dacd.timeseries.infrastructure.utils.EventJsonSerializer;
 
-import javax.jms.*;
+import jakarta.jms.*;
 import java.util.List;
 import java.util.logging.Logger;
 
