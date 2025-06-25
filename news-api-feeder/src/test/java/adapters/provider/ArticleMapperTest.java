@@ -1,7 +1,7 @@
 package adapters.provider;
 
 import com.kwabenaberko.newsapilib.models.Article;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticleMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

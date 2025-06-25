@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.newsapi.infrastructure.ports.provider;
 
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

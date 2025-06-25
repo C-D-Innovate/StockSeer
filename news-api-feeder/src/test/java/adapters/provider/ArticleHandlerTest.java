@@ -1,7 +1,7 @@
 package adapters.provider;
 
 import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticleProcessor;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.ArticlesHandler;
 import org.junit.jupiter.api.BeforeEach;

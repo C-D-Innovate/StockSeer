@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.timeseries.controller;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.IntradayStockEventFetcher;
 import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.OpeningClosingEventSaver;
 import es.ulpgc.dacd.timeseries.infrastructure.utils.MarketCloseScheduler;

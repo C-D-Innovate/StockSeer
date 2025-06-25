@@ -1,6 +1,6 @@
 package infrastructure.adapters.storage.ActiveMQ;
 
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ.ActiveMQConnectionManager;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq.ActiveMQConnectionManager;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

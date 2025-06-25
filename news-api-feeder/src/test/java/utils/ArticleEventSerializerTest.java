@@ -2,8 +2,8 @@ package utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArticleEventSerializer;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.activemq.ArticleEventSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

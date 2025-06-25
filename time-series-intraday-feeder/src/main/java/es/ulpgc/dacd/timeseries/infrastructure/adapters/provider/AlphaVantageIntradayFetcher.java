@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.timeseries.infrastructure.adapters.provider;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.IntradayStockEventFetcher;
 import com.crazzyghost.alphavantage.timeseries.response.TimeSeriesResponse;
 

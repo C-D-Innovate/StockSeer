@@ -2,7 +2,7 @@ package es.ulpgc.dacd.newsapi.infrastructure.adapters.provider;
 
 import com.kwabenaberko.newsapilib.models.response.ArticleResponse;
 import com.kwabenaberko.newsapilib.NewsApiClient;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

@@ -2,8 +2,8 @@ package es.ulpgc.dacd.newsapi.infrastructure.adapters.provider;
 
 import com.kwabenaberko.newsapilib.NewsApiClient;
 import com.kwabenaberko.newsapilib.models.request.EverythingRequest;
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.domain.service.ArticleEnricher;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.enricher.ArticleEnricher;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleEventFetcher;
 
 import java.util.List;

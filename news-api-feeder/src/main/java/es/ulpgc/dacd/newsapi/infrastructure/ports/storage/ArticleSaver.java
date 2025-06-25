@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.newsapi.infrastructure.ports.storage;
 
-import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
+import es.ulpgc.dacd.newsapi.model.ArticleEvent;
 
 import java.util.List;
 
@@ -9,5 +9,3 @@ public interface ArticleSaver {
     boolean saveArticle(ArticleEvent article);
     void close();
 }
-
-

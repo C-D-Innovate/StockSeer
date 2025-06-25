@@ -1,7 +1,7 @@
 package infrastructure.adapters.storage.SQLite;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.SQLite.SqliteEventBinder;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.sqlite.SqliteEventBinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

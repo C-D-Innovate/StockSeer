@@ -2,8 +2,8 @@ package es.ulpgc.dacd.timeseries;
 
 import es.ulpgc.dacd.timeseries.controller.IntradayFetcher;
 import es.ulpgc.dacd.timeseries.infrastructure.adapters.provider.AlphaVantageIntradayFetcher;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.SQLite.SqliteManager;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ.ActivemqPublisher;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.sqlite.SqliteManager;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq.ActivemqPublisher;
 import es.ulpgc.dacd.timeseries.infrastructure.ports.provider.IntradayStockEventFetcher;
 import es.ulpgc.dacd.timeseries.infrastructure.ports.storage.OpeningClosingEventSaver;
 import es.ulpgc.dacd.timeseries.infrastructure.utils.DateParser;

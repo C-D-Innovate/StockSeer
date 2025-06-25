@@ -1,9 +1,9 @@
 package infrastructure.adapters.storage.ActiveMQ;
 
-import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ.ActiveMQConnectionManager;
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.ActiveMQ.ActiveMQMessageSender;
-import es.ulpgc.dacd.timeseries.infrastructure.utils.EventJsonSerializer;
+import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq.ActiveMQConnectionManager;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq.ActiveMQMessageSender;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.activemq.EventJsonSerializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

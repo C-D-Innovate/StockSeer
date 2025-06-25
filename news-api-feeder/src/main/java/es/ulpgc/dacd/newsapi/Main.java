@@ -1,10 +1,10 @@
 package es.ulpgc.dacd.newsapi;
 
 import com.kwabenaberko.newsapilib.NewsApiClient;
-import es.ulpgc.dacd.newsapi.controller.ArticleFetchController;
+import es.ulpgc.dacd.newsapi.controller.ArticleController;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.provider.NewsApiFetcher;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ.ArticleEventPublisher;
-import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite.DatabaseManager;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.activemq.ArticleEventPublisher;
+import es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.sqlite.DatabaseManager;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArgsParser;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleEventFetcher;
 import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleSaver;
@@ -50,7 +50,7 @@ public class Main {
                     ? new ArticleEventPublisher(brokerUrl, queueName, topicName)
                     : new DatabaseManager(dbUrl);
 
-            ArticleFetchController fetcher = new ArticleFetchController(newsApi, storage, topicName);
+            ArticleController fetcher = new ArticleController(newsApi, storage, topicName);
 
             CompletableFuture<Void> future = fetcher.fetchAndStoreYesterdayArticles(query);
             future.join();

@@ -1,6 +1,6 @@
 package infrastructure.adapters.storage.SQLite;
 
-import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.SQLite.SqliteSchemaInitializer;
+import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.sqlite.SqliteSchemaInitializer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
