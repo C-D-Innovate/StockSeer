@@ -9,8 +9,10 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>news-api</module>
-        <module>news-api</module>
+        <module>news-api-feeder</module>
+        <module>time-series-intraday-feeder</module>
+        <module>event-store-builder</module>
+        <module>business-unit</module>
     </modules>
 
     <properties>
