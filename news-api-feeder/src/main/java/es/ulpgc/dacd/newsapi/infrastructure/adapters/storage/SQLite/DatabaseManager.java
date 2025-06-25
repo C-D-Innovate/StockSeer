@@ -1,7 +1,7 @@
 package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
-import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleRepository;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleSaver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DatabaseManager implements ArticleRepository {
+public class DatabaseManager implements ArticleSaver {
     private static final Logger LOGGER = Logger.getLogger(DatabaseManager.class.getName());
     private final Connection connection;
     private final ArticleWriter writer;

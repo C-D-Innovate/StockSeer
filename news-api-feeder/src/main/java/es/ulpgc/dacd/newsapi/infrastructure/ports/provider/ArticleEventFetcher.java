@@ -5,7 +5,7 @@ import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface ArticleProvider {
+public interface ArticleEventFetcher {
     CompletableFuture<List<ArticleEvent>> fetchArticles(String query, String from, String to);
 }
 

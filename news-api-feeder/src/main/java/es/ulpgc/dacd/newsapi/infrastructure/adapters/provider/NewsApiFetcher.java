@@ -4,13 +4,13 @@ import com.kwabenaberko.newsapilib.NewsApiClient;
 import com.kwabenaberko.newsapilib.models.request.EverythingRequest;
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 import es.ulpgc.dacd.newsapi.domain.service.ArticleEnricher;
-import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleProvider;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.provider.ArticleEventFetcher;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
-public class NewsApiFetcher implements ArticleProvider {
+public class NewsApiFetcher implements ArticleEventFetcher {
     private static final Logger LOGGER = Logger.getLogger(NewsApiFetcher.class.getName());
 
     private final NewsApiClient newsApiClient;

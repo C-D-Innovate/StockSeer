@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>time-series-intraday-feeder</module>
-         <module>news-api-feeder</module>
+        <module>news-api-feeder</module>
     </modules>
 
     <properties>
