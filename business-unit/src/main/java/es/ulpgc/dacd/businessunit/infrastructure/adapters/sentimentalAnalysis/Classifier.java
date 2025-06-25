@@ -3,11 +3,11 @@ package es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CalculateLabel {
-    private static final Logger logger = LoggerFactory.getLogger(CalculateLabel.class);
+public class Classifier {
+    private static final Logger logger = LoggerFactory.getLogger(Classifier.class);
     private final PythonCalculateLabelRunner pythonRunner;
 
-    public CalculateLabel(PythonCalculateLabelRunner pythonRunner) {
+    public Classifier(PythonCalculateLabelRunner pythonRunner) {
         this.pythonRunner = pythonRunner;
     }
 

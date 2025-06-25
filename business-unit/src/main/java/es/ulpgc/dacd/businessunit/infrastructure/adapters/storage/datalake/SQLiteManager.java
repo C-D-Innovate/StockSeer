@@ -2,7 +2,7 @@ package es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake;
 
 import es.ulpgc.dacd.businessunit.models.MarketEvent;
 import es.ulpgc.dacd.businessunit.models.NewsEvent;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.CalculateLabel;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.Classifier;
 import es.ulpgc.dacd.businessunit.infrastructure.ports.EventStorage;
 
 import java.sql.Connection;
@@ -12,11 +12,11 @@ public class SQLiteManager implements EventStorage, AutoCloseable {
     private final Connection conn;
     private final SQLiteEventWriter writer;
 
-    public SQLiteManager(String dbUrl, CalculateLabel labelCalculator) {
+    public SQLiteManager(String dbUrl, Classifier classifier) {
         try {
             this.conn = SQLiteConnector.connect(dbUrl);
             SQLiteInitializer.initializeTables(conn);
-            this.writer = new SQLiteEventWriter(conn, labelCalculator);
+            this.writer = new SQLiteEventWriter(conn, classifier);
         } catch (SQLException e) {
             throw new RuntimeException("Error conectando o inicializando la base de datos", e);
         }

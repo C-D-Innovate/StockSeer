@@ -1,8 +1,8 @@
 package es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis;
 
-public class CalculateRatio {
+public class RatioCalculator {
 
-    public double calcularRatio(String[] sentimentLabels) {
+    public double calculateRatio(String[] sentimentLabels) {
         if (sentimentLabels == null || sentimentLabels.length == 0) return 0.0;
 
         double total = 0.0;

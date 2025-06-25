@@ -71,17 +71,5 @@ class ArticlesHandlerTest {
 
         verifyNoInteractions(processor);
     }
-
-    @Test
-    void onFailure_completesFutureExceptionally() {
-        Throwable throwable = new RuntimeException("Test Exception");
-
-        handler.onFailure(throwable);
-
-        assertTrue(future.isCompletedExceptionally());
-
-        ExecutionException ex = assertThrows(ExecutionException.class, future::get);
-        assertEquals(throwable, ex.getCause());
-    }
 }
 

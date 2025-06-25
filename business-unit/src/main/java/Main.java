@@ -3,10 +3,10 @@ import es.ulpgc.dacd.businessunit.application.RealTimeEventStarter;
 import es.ulpgc.dacd.businessunit.controller.EventController;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.ActiveMQSubscriber;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.HistoricalEventReader;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.CalculateLabel;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.Classifier;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.PythonCalculateLabelRunner;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.PythonExecutor;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datamart.DatamartStorageManager;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datamart.DatamartManager;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake.SQLiteManager;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.ArgsParser;
 import org.slf4j.Logger;
@@ -39,10 +39,10 @@ public class Main {
 
         PythonExecutor pythonExecutor = new PythonExecutor();
         PythonCalculateLabelRunner labelRunner = new PythonCalculateLabelRunner(pythonExecutor);
-        CalculateLabel label = new CalculateLabel(labelRunner);
+        Classifier label = new Classifier(labelRunner);
 
         try (SQLiteManager storage = new SQLiteManager(dbUrl, label)) {
-            DatamartStorageManager datamartStorage = new DatamartStorageManager(dbUrl);
+            DatamartManager datamartStorage = new DatamartManager(dbUrl);
             EventController handler = new EventController(storage);
 
             HistoricalEventProcessor replayService = new HistoricalEventProcessor(

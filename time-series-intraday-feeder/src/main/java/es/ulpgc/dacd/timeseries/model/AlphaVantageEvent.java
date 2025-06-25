@@ -33,45 +33,21 @@ public class AlphaVantageEvent {
     public Instant getTs() {
         return ts;
     }
-    public void setTs(Instant timestamp) {
-        this.ts = timestamp;
-    }
-    public String getFormattedTs() {
-        return ts.toString();
-    }
     public double getOpen() {
         return open;
     }
-    public void setOpen(double open) {
-        this.open = open;
-    }
     public double getHigh() {
         return high;
-    }
-    public void setHigh(double high) {
-        this.high = high;
     }
 
     public double getLow() {
         return low;
     }
-    public void setLow(double low) {
-        this.low = low;
-    }
     public double getClose() {
         return close;
     }
-    public void setClose(double close) {
-        this.close = close;
-    }
     public long getVolume() {
         return volume;
-    }
-    public void setVolume(long volume) {
-        this.volume = volume;
-    }
-    public String getSs() {
-        return ss;
     }
     @Override
     public String toString() {

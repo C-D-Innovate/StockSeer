@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datamart;
 
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.CalculateRatio;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.RatioCalculator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,10 +8,10 @@ import java.sql.SQLException;
 
 public class DatamartWriter {
 
-    private final CalculateRatio asignarRatio;
+    private final RatioCalculator asignarRatio;
 
     public DatamartWriter() {
-        this.asignarRatio = new CalculateRatio();
+        this.asignarRatio = new RatioCalculator();
     }
 
     public void merge(Connection conn) throws SQLException {
@@ -57,7 +57,7 @@ public class DatamartWriter {
             while (rs.next()) {
                 String day = rs.getString("day");
                 String sentimentsStr = rs.getString("sentiments");
-                double avgSent = asignarRatio.calcularRatio(sentimentsStr.split(","));
+                double avgSent = asignarRatio.calculateRatio(sentimentsStr.split(","));
 
                 String updateSql = "UPDATE clean_datamart SET avg_sent = ? WHERE day = ?";
                 try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {

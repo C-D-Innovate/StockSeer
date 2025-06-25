@@ -2,7 +2,7 @@ package es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake;
 
 import es.ulpgc.dacd.businessunit.models.MarketEvent;
 import es.ulpgc.dacd.businessunit.models.NewsEvent;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.CalculateLabel;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.Classifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +19,17 @@ public class SQLiteEventWriter {
     private static final Logger logger = LoggerFactory.getLogger(SQLiteEventWriter.class);
 
     private final Connection conn;
-    private final CalculateLabel labelCalculator;
+    private final Classifier classifier;
 
-    public SQLiteEventWriter(Connection conn, CalculateLabel labelCalculator) {
+    public SQLiteEventWriter(Connection conn, Classifier classifier) {
         this.conn = conn;
-        this.labelCalculator = labelCalculator;
+        this.classifier = classifier;
     }
 
     public void saveNewsEvent(NewsEvent event) {
         try {
             String text = Optional.ofNullable(event.fullContent()).orElse(event.content());
-            String label = labelCalculator.labelFrom(text);
+            String label = classifier.labelFrom(text);
 
             String sql = """
                 INSERT OR IGNORE INTO dirty_news (ts, url, content, fullContent, date, sentiment_label) 
