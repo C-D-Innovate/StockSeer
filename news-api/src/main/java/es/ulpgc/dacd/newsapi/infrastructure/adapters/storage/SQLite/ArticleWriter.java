@@ -3,8 +3,6 @@ package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.SQLite;
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 
 import java.sql.*;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

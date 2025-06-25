@@ -2,13 +2,13 @@ package es.ulpgc.dacd.newsapi.infrastructure.adapters.storage.ActiveMQ;
 
 import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 import es.ulpgc.dacd.newsapi.infrastructure.adapters.utils.ArticleEventSerializer;
-import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.StoragePort;
+import es.ulpgc.dacd.newsapi.infrastructure.ports.storage.ArticleRepository;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ArticleEventPublisher implements StoragePort {
+public class ArticleEventPublisher implements ArticleRepository {
     private static final Logger LOGGER = Logger.getLogger(ArticleEventPublisher.class.getName());
 
     private final MessageBrokerSender jmsPublisher;

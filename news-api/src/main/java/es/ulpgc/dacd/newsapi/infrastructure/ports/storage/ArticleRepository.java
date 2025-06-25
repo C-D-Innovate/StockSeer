@@ -4,7 +4,7 @@ import es.ulpgc.dacd.newsapi.domain.model.ArticleEvent;
 
 import java.util.List;
 
-public interface StoragePort {
+public interface ArticleRepository {
     int saveArticles(List<ArticleEvent> articles);
     boolean saveArticle(ArticleEvent article);
     void close();

@@ -24,14 +24,16 @@ public class ArticleEvent {
         this.fullContent = fullContent;
     }
 
-    public String getTopic() { return topic; }
-
-    public String getSs() {
-        return ss;
+    public String getTopic() {
+        return topic;
     }
 
     public Instant getTs() {
         return ts;
+    }
+
+    public String getSs() {
+        return ss;
     }
 
     public String getUrl() {
