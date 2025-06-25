@@ -4,6 +4,6 @@ import es.ulpgc.dacd.timeseries.domain.model.AlphaVantageEvent;
 
 import java.util.List;
 
-public interface StockDataStorage {
+public interface OpeningClosingEventSaver {
     void saveOpeningAndClosingEvents(List<AlphaVantageEvent> data, String context);
 }
