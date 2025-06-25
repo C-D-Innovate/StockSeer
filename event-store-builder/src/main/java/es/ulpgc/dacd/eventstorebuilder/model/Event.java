@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.eventstorebuilder.domain.model;
+package es.ulpgc.dacd.eventstorebuilder.model;
 
 import java.time.Instant;
 
