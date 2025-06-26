@@ -35,23 +35,23 @@ public class IntradayFetcher {
     }
 
     public void start() {
-        logger.info("[Fetcher] Iniciando espera hasta el cierre del mercado para símbolo: " + symbol + "\n");
+        logger.info("[Fetcher] Iniciando espera hasta el cierre del mercado para símbolo: " + symbol+ "\n");
         MarketCloseScheduler scheduler = new MarketCloseScheduler(zone, marketClose);
         scheduler.start(this::fetchAndStore);
     }
 
     private void fetchAndStore() {
         try {
-            logger.info("[Fetcher] Solicitando datos de AlphaVantage para: " + symbol + "\n");
+            logger.info("[Fetcher] Solicitando datos de AlphaVantage para: " + symbol+ "\n");
             List<AlphaVantageEvent> stockData = dataProvider.fetch(symbol);
 
             if (stockData != null && !stockData.isEmpty()) {
                 dataStorage.saveOpeningAndClosingEvents(stockData, context);
             } else {
-                logger.warning("[Fetcher] No se recibieron datos del proveedor para el símbolo: " + symbol + "\n");
+                logger.warning("[Fetcher] No se recibieron datos del proveedor para el símbolo: " + symbol+ "\n");
             }
         } catch (Exception e) {
-            logger.severe("[Fetcher] Error durante el proceso de obtención o guardado de datos: " + e.getMessage() + "\n");
+            logger.severe("[Fetcher] Error durante el proceso de obtención o guardado de datos: " + e.getMessage()+ "\n");
         }
     }
 }

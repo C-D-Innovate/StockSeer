@@ -1,5 +1,5 @@
-import es.ulpgc.dacd.businessunit.application.HistoricalEventProcessor;
-import es.ulpgc.dacd.businessunit.application.RealTimeEventStarter;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.HistoricalEventProcessor;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.RealTimeEventStarter;
 import es.ulpgc.dacd.businessunit.controller.EventController;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.ActiveMQSubscriber;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.HistoricalEventReader;
@@ -9,6 +9,9 @@ import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.Py
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datamart.DatamartManager;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake.SQLiteManager;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.ArgsParser;
+import es.ulpgc.dacd.businessunit.infrastructure.ml.DashboardLauncher;
+import es.ulpgc.dacd.businessunit.infrastructure.ml.PythonTrainerLauncher;
+import es.ulpgc.dacd.businessunit.infrastructure.ml.TrainingPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,15 @@ public class Main {
         String brokerUrl = config.get("BROKER_URL");
         String topicsStr = config.get("TOPICS");
         String clientId = config.get("CLIENT_ID");
+        String cleanDatamartPath = config.get("CLEAN_DATAMART_PATH");
+
+        String trainScriptPath = config.get("TRAIN_SCRIPT_PATH");
+        String dashboardScriptPath = config.get("DASHBOARD_SCRIPT_PATH");
+        String dashboardCsvPath = config.get("DASHBOARD_CSV_PATH");
+        String dashboardModelPath = config.get("DASHBOARD_MODEL_PATH");
+        String dbPathForPython = dbUrl.replace("jdbc:sqlite:", "");
+
+        int trainingInterval = Integer.parseInt(config.getOrDefault("TRAINING_INTERVAL_MINUTES", "5"));
 
         if (topicsStr == null || topicsStr.isBlank()) {
             log.error("No se ha configurado la clave TOPICS en el archivo.");
@@ -67,7 +79,32 @@ public class Main {
             datamartStorage.mergeToDatamart();
             datamartStorage.updateAvgSentiment();
 
-            log.info("Suscripciones activas. Esperando eventos en tiempo real...");
+            PythonTrainerLauncher trainer = new PythonTrainerLauncher(
+                    null, trainScriptPath, dbPathForPython, dashboardCsvPath, dashboardModelPath
+            );
+            DashboardLauncher dashboard = new DashboardLauncher(
+                    null, dashboardScriptPath, dashboardCsvPath, dashboardModelPath
+            );
+            TrainingPipeline pipeline = new TrainingPipeline(trainer, dashboard, cleanDatamartPath);
+
+            Thread trainingThread = new Thread(() -> {
+                while (true) {
+                    try {
+                        log.info("Iniciando pipeline de entrenamiento...");
+                        pipeline.run();
+
+                        log.info("Esperando {} minutos para el siguiente entrenamiento...", trainingInterval);
+                        Thread.sleep(trainingInterval * 60L * 1000L);
+                    } catch (Exception e) {
+                        log.error("Error en la ejecución del pipeline de entrenamiento: {}", e.getMessage(), e);
+                    }
+                }
+            });
+
+            trainingThread.setDaemon(true);
+            trainingThread.start();
+
+            log.info("Sistema activo. Esperando eventos en tiempo real...");
             Thread.currentThread().join();
 
         } catch (Exception e) {

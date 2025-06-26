@@ -54,23 +54,29 @@ public class SQLiteEventWriter {
     }
 
     public void saveMarketEvent(MarketEvent event) {
-        String sql = "INSERT OR IGNORE INTO dirty_market (ts, symbol, price, volume, date) VALUES (?, ?, ?, ?, ?)";
+        String sql = """
+        INSERT OR IGNORE INTO dirty_market (symbol, volume, open_ts, open, close_ts, close, date) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            String date = LocalDate.ofInstant(event.ts(), ZoneOffset.UTC).toString();
+            String date = LocalDate.ofInstant(event.open_ts(), ZoneOffset.UTC).toString();
 
-            pstmt.setString(1, event.ts().toString());
-            pstmt.setString(2, event.symbol());
-            pstmt.setDouble(3, event.price());
-            pstmt.setLong(4, event.volume());
-            pstmt.setString(5, date);
+            pstmt.setString(1, event.symbol());
+            pstmt.setLong(2, event.volume());
+            pstmt.setString(3, event.open_ts().toString());
+            pstmt.setDouble(4, event.open());
+            pstmt.setString(5, event.close_ts().toString());
+            pstmt.setDouble(6, event.close());
+            pstmt.setString(7, date);
 
             pstmt.executeUpdate();
-            logger.info("Market almacenado: {} @ {}", event.symbol(), event.ts());
+            logger.info("Market almacenado: {} open_ts={} close_ts={}", event.symbol(), event.open_ts(), event.close_ts());
         } catch (SQLException e) {
             logger.error("Error guardando MarketEvent: {}", e.getMessage(), e);
         }
     }
+
 
     public boolean containsUrl(String url) {
         String sql = "SELECT 1 FROM dirty_news WHERE url = ? LIMIT 1";
@@ -84,16 +90,16 @@ public class SQLiteEventWriter {
         }
     }
 
-    public boolean containsMarket(String symbol, String ts) {
-        String sql = "SELECT 1 FROM dirty_market WHERE symbol = ? AND ts = ? LIMIT 1";
+    public boolean containsMarket(String symbol, String openTs) {
+        String sql = "SELECT 1 FROM dirty_market WHERE symbol = ? AND open_ts = ? LIMIT 1";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, symbol);
-            stmt.setString(2, ts);
+            stmt.setString(2, openTs);
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error verificando existencia de evento de mercado: " + symbol + "@" + ts, e);
+            throw new RuntimeException("Error verificando existencia de evento de mercado: " + symbol + "@" + openTs, e);
         }
     }
 }

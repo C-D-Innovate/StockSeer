@@ -56,7 +56,7 @@ public class HistoricalEventReader {
                     }
                 }
 
-                if ("AlphaVantageEvent".equalsIgnoreCase(topic) && json.has("symbol") && json.has("ts")) {
+                if ("StockQuotes".equalsIgnoreCase(topic) && json.has("symbol") && json.has("ts")) {
                     String symbol = json.get("symbol").getAsString();
                     String ts = json.get("ts").getAsString();
                     return storage.containsMarket(symbol, ts);

@@ -20,14 +20,18 @@ public class SQLiteInitializer {
 
             String createMarketTable = """
             CREATE TABLE IF NOT EXISTS dirty_market (
-                ts TEXT,
                 symbol TEXT,
-                price REAL,
                 volume INTEGER,
+                open_ts TEXT,
+                open REAL,
+                close_ts TEXT,
+                close REAL,
                 date TEXT,
-                PRIMARY KEY (symbol, ts)
+                PRIMARY KEY (symbol, open_ts, close_ts)
             );
             """;
+
+
 
             stmt.execute(createNewsTable);
             stmt.execute(createMarketTable);

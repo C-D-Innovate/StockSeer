@@ -9,5 +9,3 @@ public interface ArticleSaver {
     boolean saveArticle(ArticleEvent article);
     void close();
 }
-
-

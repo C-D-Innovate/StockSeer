@@ -23,17 +23,19 @@ public class DatamartWriter {
         INSERT INTO clean_datamart (symbol, day, open_ts, open_price, close_ts, close_price, news_count, avg_sent)
         SELECT
             m.symbol,
-            DATE(m.ts) AS day,
-            MIN(CASE strftime('%H:%M', m.ts) WHEN '13:30' THEN m.ts ELSE NULL END) AS open_ts,
-            MIN(CASE strftime('%H:%M', m.ts) WHEN '13:30' THEN m.price ELSE NULL END) AS open_price,
-            MIN(CASE strftime('%H:%M', m.ts) WHEN '20:00' THEN m.ts ELSE NULL END) AS close_ts,
-            MIN(CASE strftime('%H:%M', m.ts) WHEN '20:00' THEN m.price ELSE NULL END) AS close_price,
+            DATE(m.open_ts) AS day,
+            m.open_ts,
+            m.open,
+            m.close_ts,
+            m.close,
             COUNT(DISTINCT n.url) AS news_count,
             NULL AS avg_sent
         FROM dirty_market m
-        INNER JOIN dirty_news n ON DATE(m.ts) = DATE(n.ts)
-        GROUP BY m.symbol, DATE(m.ts);
+        INNER JOIN dirty_news n ON DATE(m.open_ts) = DATE(n.ts)
+        GROUP BY m.symbol, DATE(m.open_ts), m.open_ts, m.close_ts, m.open, m.close;
         """;
+
+
 
         try (var stmt = conn.createStatement()) {
             stmt.execute(insertSql);

@@ -16,7 +16,7 @@ public class Classifier {
             return pythonRunner.runAnalysisScript(text);
         } catch (Exception e) {
             logger.error("Error ejecutando análisis de sentimiento: {}", e.getMessage(), e);
-            return "unknown";
+            return "NEUTRAL";
         }
     }
 }

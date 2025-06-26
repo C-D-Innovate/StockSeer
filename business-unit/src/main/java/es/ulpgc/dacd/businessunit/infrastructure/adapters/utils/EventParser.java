@@ -21,20 +21,33 @@ public class EventParser {
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public MarketEvent parseMarketEvent(String json) {
+    public MarketEvent parseMarketEvent(String jsonOpenLine, String jsonCloseLine) {
         try {
-            JsonNode root = mapper.readTree(json);
-            String symbol = root.get("symbol").asText();
-            double price = root.get("high").asDouble();
-            long volume = root.get("volume").asLong();
-            Instant ts = Instant.parse(root.get("ts").asText());
-            return new MarketEvent(symbol, price, volume, ts);
+            // Línea con el open (13:30)
+            JsonNode openNode = mapper.readTree(jsonOpenLine);
+            String tsOpenString = openNode.get("ts").asText();
+            if (!tsOpenString.endsWith("T13:30:00Z")) return null;
+
+            String symbol = openNode.get("symbol").asText();
+            double open = openNode.get("open").asDouble();
+            Instant open_ts = Instant.parse(tsOpenString);
+
+            // Línea con el close (20:00)
+            JsonNode closeNode = mapper.readTree(jsonCloseLine);
+            String tsCloseString = closeNode.get("ts").asText();
+            if (!tsCloseString.endsWith("T20:00:00Z")) return null;
+
+            long volume = closeNode.get("volume").asLong();
+            double close = closeNode.get("close").asDouble();
+            Instant close_ts = Instant.parse(tsCloseString);
+
+            return new MarketEvent(symbol, volume, open_ts, open, close_ts, close);
+
         } catch (Exception e) {
             logger.warn("[WARN] Error parseando MarketEvent: {}", e.getMessage(), e);
             return null;
         }
     }
-
     public NewsEvent parseNewsEvent(String json) {
         try {
             JsonNode root = mapper.readTree(json);
@@ -50,4 +63,14 @@ public class EventParser {
             return null;
         }
     }
+
+    public JsonNode readJson(String json) {
+        try {
+            return mapper.readTree(json);
+        } catch (Exception e) {
+            logger.warn("Error leyendo JSON: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
 }

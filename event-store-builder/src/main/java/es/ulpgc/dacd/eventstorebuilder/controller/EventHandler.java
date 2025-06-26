@@ -2,7 +2,7 @@ package es.ulpgc.dacd.eventstorebuilder.controller;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import es.ulpgc.dacd.eventstorebuilder.domain.model.Event;
+import es.ulpgc.dacd.eventstorebuilder.model.Event;
 import es.ulpgc.dacd.eventstorebuilder.infrastructure.port.EventStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

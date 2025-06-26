@@ -21,7 +21,6 @@ public class SQLiteManager implements EventStorage, AutoCloseable {
             throw new RuntimeException("Error conectando o inicializando la base de datos", e);
         }
     }
-
     @Override
     public void saveMarketEvent(MarketEvent event) {
         writer.saveMarketEvent(event);
@@ -38,7 +37,6 @@ public class SQLiteManager implements EventStorage, AutoCloseable {
             conn.close();
         }
     }
-
     @Override
     public boolean containsUrl(String url) {
         return writer.containsUrl(url);
@@ -48,8 +46,4 @@ public class SQLiteManager implements EventStorage, AutoCloseable {
     public boolean containsMarket(String symbol, String ts) {
         return writer.containsMarket(symbol, ts);
     }
-
-
-
-
 }

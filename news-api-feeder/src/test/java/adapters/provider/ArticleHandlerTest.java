@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -69,6 +70,18 @@ class ArticlesHandlerTest {
         assertTrue(future.get().isEmpty());
 
         verifyNoInteractions(processor);
+    }
+
+    @Test
+    void onFailure_completesFutureExceptionally() {
+        Throwable throwable = new RuntimeException("Test Exception");
+
+        handler.onFailure(throwable);
+
+        assertTrue(future.isCompletedExceptionally());
+
+        ExecutionException ex = assertThrows(ExecutionException.class, future::get);
+        assertEquals(throwable, ex.getCause());
     }
 }
 

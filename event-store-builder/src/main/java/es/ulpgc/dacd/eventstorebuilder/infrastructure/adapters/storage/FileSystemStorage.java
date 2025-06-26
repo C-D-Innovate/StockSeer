@@ -1,10 +1,9 @@
 package es.ulpgc.dacd.eventstorebuilder.infrastructure.adapters.storage;
 
-import es.ulpgc.dacd.eventstorebuilder.domain.model.Event;
+import es.ulpgc.dacd.eventstorebuilder.model.Event;
 import es.ulpgc.dacd.eventstorebuilder.infrastructure.port.EventStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.*;
