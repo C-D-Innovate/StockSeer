@@ -332,4 +332,46 @@ De este modo, garantizas que todos los consumidores estén activos antes de que 
 
 ---
 
+Perfecto, aquí tienes un texto redactado para el README o memoria del proyecto. Incluye dos huecos claros para insertar imágenes: uno para el esquema del `StackingRegressor` y otro para una muestra del `CSV` de entrada. Está redactado de forma profesional, pero comprensible:
 
+---
+
+## 🤖 Entrenamiento del modelo de predicción
+
+El entrenamiento del modelo predictivo se ha llevado a cabo a partir de los datos almacenados en la tabla `clean_datamart`, ubicada en la base de datos SQLite generada por el módulo de integración de eventos. Esta tabla contiene información relevante sobre el mercado bursátil y noticias procesadas, ya tratadas y enriquecidas previamente.
+
+Dicho entrenamiento sigue una estrategia de *stacking*, donde se combinan diversos modelos de regresión con el objetivo de mejorar la capacidad predictiva. Los modelos base utilizados incluyen:
+
+* `RandomForestRegressor`
+* `SVR` (Support Vector Regressor)
+* `ElasticNet`
+* `DecisionTreeRegressor`
+* `KNeighborsRegressor`
+
+Además, para aquellos modelos que lo requieren, se ha aplicado escalado de características mediante `StandardScaler` encapsulado en un `Pipeline`.
+
+El modelo final es un `StackingRegressor` que integra a todos los anteriores y utiliza un `RandomForestRegressor` como estimador final. A continuación se muestra el esquema representativo de la arquitectura del `StackingRegressor`:
+
+📌 **\[Inserta aquí una imagen/diagrama del StackingRegressor]**
+
+### 🧪 Validación y métricas
+
+Para validar el rendimiento del modelo, se ha empleado una estrategia de validación cruzada basada en series temporales (`TimeSeriesSplit`), evitando así el uso de datos futuros para predecir el pasado. Tras realizar una búsqueda aleatoria de hiperparámetros (`RandomizedSearchCV`) sobre cada estimador base, se ha obtenido un error cuadrático medio (RMSE) competitivo sobre el conjunto de test, lo que indica una buena capacidad de generalización del modelo entrenado.
+
+### 🧾 Ingeniería de características
+
+Antes del entrenamiento, se han generado nuevas variables derivadas con el objetivo de capturar dinámicas relevantes del mercado. Entre estas se incluyen:
+
+* Diferencias temporales (`delta_open`, `delta_close`, `delta_sent`)
+* Rango diario (`range`)
+* Volatilidad reciente (`volatility`)
+* Momentum a corto plazo (`momentum`)
+* Variable objetivo: precio de apertura del día siguiente (`y`)
+
+### 🧮 Datos utilizados
+
+La tabla `clean_datamart` se exporta automáticamente a un fichero CSV que sirve como entrada directa al pipeline de entrenamiento. La siguiente imagen muestra un extracto representativo del conjunto de datos empleados:
+
+📌 **\[Inserta aquí una imagen de una muestra del CSV generado]**
+
+---
