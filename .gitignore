@@ -37,3 +37,7 @@ build/
 ### Mac OS ###
 .DS_Store
 /news-api/args.txt
+/time-series-intraday-feeder/args.txt
+/news-api-feeder/args.txt
+/event-store-builder/args.txt
+/business-unit/args.txt

@@ -7,6 +7,13 @@
     <groupId>org.cdinnovated</groupId>
     <artifactId>dacd2-project</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>news-api-feeder</module>
+        <module>time-series-intraday-feeder</module>
+        <module>event-store-builder</module>
+        <module>business-unit</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -14,10 +21,4 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <modules>
-        <module>time-series-intraday-feeder</module>
-        <module>news-api-feeder</module>
-        <module>event-store-builder</module>
-    </modules>
-    
 </project>

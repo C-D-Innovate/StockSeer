@@ -1,0 +1,2 @@
+{"topic": "StockQuotes", "ss": "AlphaVantageFeeder", "ts": "2025-04-17T13:30:00Z", "symbol": "AMZN", "open": 176.0, "high": 176.21, "low": 175.31, "close": 175.5, "volume": 2593704}
+{"topic": "StockQuotes", "ss": "AlphaVantageFeeder", "ts": "2025-04-17T20:00:00Z", "symbol": "AMZN", "open": 172.61, "high": 172.88, "low": 172.59, "close": 172.84, "volume": 8717221}
