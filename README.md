@@ -320,13 +320,16 @@ Para que el sistema funcione correctamente, se recomienda ejecutar los módulos 
 
 1. **`event-store-builder`**
    (Empieza escuchando en el broker y está listo para almacenar eventos que lleguen)
+   Para ejecutar este módulo proporcionamos ya la carpeta evenstore dentro de su módulo correspondiente, con el histórico de cada api, porque sino el tiempo de     ejecución sería muy largo.
 
-2. **`time-series-intraday-feeder`**
+3. **`time-series-intraday-feeder`**
    (Obtiene y publica datos bursátiles de apertura/cierre)
 
-3. **`news-api-feeder`**
+4. **`news-api-feeder`**
    (Recupera noticias y publica o guarda los artículos enriquecidos)
 
 De este modo, garantizas que todos los consumidores estén activos antes de que se publiquen los eventos.
 
 ---
+
+
