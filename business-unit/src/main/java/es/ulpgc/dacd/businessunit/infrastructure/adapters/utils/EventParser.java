@@ -23,7 +23,7 @@ public class EventParser {
 
     public MarketEvent parseMarketEvent(String jsonOpenLine, String jsonCloseLine) {
         try {
-            // Línea con el open (13:30)
+
             JsonNode openNode = mapper.readTree(jsonOpenLine);
             String tsOpenString = openNode.get("ts").asText();
             if (!tsOpenString.endsWith("T13:30:00Z")) return null;
@@ -32,7 +32,6 @@ public class EventParser {
             double open = openNode.get("open").asDouble();
             Instant open_ts = Instant.parse(tsOpenString);
 
-            // Línea con el close (20:00)
             JsonNode closeNode = mapper.readTree(jsonCloseLine);
             String tsCloseString = closeNode.get("ts").asText();
             if (!tsCloseString.endsWith("T20:00:00Z")) return null;
