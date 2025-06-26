@@ -1,4 +1,4 @@
-package infrastructure.adapters.storage.SQLite;
+package infrastructure.adapters.storage.sqlite;
 
 import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.sqlite.SqliteSchemaInitializer;
 import org.junit.jupiter.api.BeforeAll;

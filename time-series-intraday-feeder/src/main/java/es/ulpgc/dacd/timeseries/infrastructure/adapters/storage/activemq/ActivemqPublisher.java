@@ -15,10 +15,10 @@ public class ActivemqPublisher implements OpeningClosingEventSaver {
     private final ActiveMQMessageSender messageSender;
     private final LocalDate today;
 
-    public ActivemqPublisher(String brokerUrl, String topicName, LocalDate today) {
+    public ActivemqPublisher(String brokerUrl, String topic, LocalDate today) {
         this.today = today;
 
-        ActiveMQConnectionManager connection = new ActiveMQConnectionManager(brokerUrl, topicName);
+        ActiveMQConnectionManager connection = new ActiveMQConnectionManager(brokerUrl, topic);
         EventJsonSerializer serializer = new EventJsonSerializer();
         this.messageSender = new ActiveMQMessageSender(connection, serializer);
     }

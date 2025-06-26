@@ -1,4 +1,4 @@
-package infrastructure.adapters.storage.SQLite;
+package infrastructure.adapters.storage.sqlite;
 
 import es.ulpgc.dacd.timeseries.model.AlphaVantageEvent;
 import es.ulpgc.dacd.timeseries.infrastructure.adapters.storage.sqlite.SqliteEventBinder;
