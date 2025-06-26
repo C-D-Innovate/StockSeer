@@ -158,6 +158,13 @@ Este módulo se encarga de:
 3. Filtra apertura/cierre exactos mediante `MarketHoursFilter`.
 4. Guarda en `SQLite` o publica en `ActiveMQ`.
 
+### 🧩 Principios y patrones aplicados
+
+* **Clean Architecture + Hexagonal**: separación clara de puertos (`IntradayStockEventFetcher`, `OpeningClosingEventSaver`) y adaptadores (`AlphaVantageIntradayFetcher`, `SqliteManager`).
+* **Factory Pattern**: construcción de eventos con `AlphaVantageEventFactory`.
+* **Strategy Pattern**: selección dinámica del almacenamiento según configuración.
+* **SRP / OCP / DRY** aplicados rigurosamente en clases como `IntradayFetcher`, `MarketCloseScheduler`, `SqliteManager`.
+
 ---
 
 ### 🗞️ `news-api-feeder`
@@ -173,7 +180,7 @@ Este módulo se encarga de:
 
 * Recuperar **noticias económicas** mediante la API de [NewsAPI.org](https://newsapi.org/), filtradas por tema y fecha.
 * Crear eventos del tipo `ArticleEvent` que contienen título, contenido, fecha de publicación, etc.
-* Enriquecer el contenido mediante técnicas de scraping si el texto original está truncado, usando librerías como `newspaper` o `BeautifulSoup`.
+* Enriquecer el contenido mediante técnicas de scraping.
 * **Publicar** los artículos procesados en un broker (`ActiveMQ`) o almacenarlos en una base de datos local SQLite.
 
 ### 📁 Flujo simplificado
@@ -183,9 +190,12 @@ Este módulo se encarga de:
 3. Procesa y enriquece cada artículo (`ArticleProcessor`, `ArticleEnricher`).
 4. Almacena en SQLite o publica en cola/tópico con ActiveMQ.
 
----
-Perfecto, aquí tienes la descripción del módulo `event-store-builder` para integrarla en tu README dentro del apartado de módulos:
+### 🧩 Principios y patrones aplicados
 
+* **Clean Architecture**: uso de puertos (`ArticleEventFetcher`, `ArticleSaver`) e interfaces desacopladas.
+* **Adapter Pattern**: `NewsApiFetcher`, `DatabaseManager` y `ArticleEventPublisher` implementan las interfaces de persistencia y captura.
+* **SRP y OCP**: cada clase tiene una responsabilidad clara y puede ampliarse fácilmente (añadir otro API de noticias, por ejemplo).
+* 
 ---
 
 ### 🗃️ `event-store-builder`
@@ -222,6 +232,101 @@ Cada línea del fichero contiene un evento en formato JSON.
 2. `EventHandler` deserializa el mensaje y crea un `Event`.
 3. El evento se guarda con `FileSystemStorage`, creando la ruta si no existe.
 
-📦 Este módulo facilita la persistencia segura y estructurada de eventos históricos para futuros análisis o auditoría.
+### 🧩 Principios y patrones aplicados
+
+* **Clean Architecture**: separación entre infraestructura (`ActiveMQSubscriber`, `FileSystemStorage`) y lógica de control (`EventHandler`).
+* **Adapter Pattern**: `FileSystemStorage` implementa la interfaz `EventStorage`.
+* **SRP / OCP**: modularidad completa entre suscripción, transformación y almacenamiento.
+
+---
+
+## 🛠️ Instrucciones para compilar y ejecutar cada módulo
+
+Todos los módulos del sistema están desarrollados en **Java 21** usando **Maven**. Algunos de ellos también invocan scripts externos en **Python 3.11+** para realizar tareas auxiliares como el enriquecimiento de contenido.
+
+---
+
+### 🧾 Configuración de ejecución
+
+Cada módulo necesita un archivo `args.txt` con sus parámetros de configuración (como claves API, URLs de bases de datos o topics).
+Este archivo debe proporcionarse al ejecutar el módulo.
+
+A continuación, se muestra un ejemplo de configuración por módulo:
+
+---
+
+#### 📦 `time-series-intraday-feeder` – `args.txt`
+
+```txt
+API_KEY=TuAPIKEY
+DB_URL=jdbc:sqlite:data.db
+SYMBOL=AMZN
+FETCH_INTERVAL_MINUTES=1
+STORAGE_MODE=activemq o sqlite
+BROKER_URL=tcp://localhost:61616
+TOPIC_NAME=StockQuotes
+TODAY=fecha de hoy con el siguiente formato 2025-06-25
+MARKET_CLOSE= En caso de que lo quieras ejecutar en una hora que no sea el cierre del mercado, deberás poner la hora actual de nueva york
+```
+
+---
+
+#### 🗞️ `news-api-feeder` – `args.txt`
+
+```txt
+DB_URL=jdbc:sqlite:ruta
+API_KEY=TuAPIKEY
+DEFAULT_LANGUAGE=en
+FETCH_INTERVAL_HOURS=1
+BROKER_URL=tcp://localhost:61616
+QUEUE_NAME=Articles
+TOPIC_NAME=Articles
+STORAGE_TARGET=broker
+SOURCE_SYSTEM=NewsApiFeeder
+QUERY=AMZN
+```
+
+---
+
+#### 🗃️ `event-store-builder` – `args.txt`
+
+```txt
+BROKER_URL=tcp://localhost:61616
+TOPICS=Articles, StockQuotes
+CLIENT_ID=event-store-builder-client
+```
+
+---
+
+### ⚙️ Formas de ejecución
+
+Existen dos formas principales de ejecutar los módulos:
+
+* 🧪 **Opción 1 (válida pero menos cómoda):** ejecutar el `.jar` desde la terminal especificando la ruta del archivo `args.txt`.
+* ✅ **Opción recomendada:** añadir la ruta al `args.txt` directamente en la **configuración de arranque del método `main()`** desde el entorno de desarrollo de IntelliJ IDEA.
+
+Esto permite lanzar los módulos con un solo clic y la ejecución ordenada de los módulos.
+
+📷 A continuación se muestra un ejemplo visual de esta configuración:
+
+> ![Ejemplo configuración Main](./images/configuracion-main-ejecucion.png)
+
+NOTA: En caso de necesitar el entorno de python, observar como en la variable de entorno hay que pone PYTHON_EXECUTABLE=ruta_del_entorno
+---
+
+### ⏱️ Orden de ejecución de los módulos
+
+Para que el sistema funcione correctamente, se recomienda ejecutar los módulos en el siguiente orden:
+
+1. **`event-store-builder`**
+   (Empieza escuchando en el broker y está listo para almacenar eventos que lleguen)
+
+2. **`time-series-intraday-feeder`**
+   (Obtiene y publica datos bursátiles de apertura/cierre)
+
+3. **`news-api-feeder`**
+   (Recupera noticias y publica o guarda los artículos enriquecidos)
+
+De este modo, garantizas que todos los consumidores estén activos antes de que se publiquen los eventos.
 
 ---
