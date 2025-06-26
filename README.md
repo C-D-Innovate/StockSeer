@@ -309,7 +309,7 @@ Esto permite lanzar los módulos con un solo clic y la ejecución ordenada de lo
 
 📷 A continuación se muestra un ejemplo visual de esta configuración:
 
-> ![Ejemplo configuración Main](./images/configuracion-main-ejecucion.png)
+![Ejemplo configuración Main](fotos_readme/configuracion_main.png)
 
 NOTA: En caso de necesitar el entorno de python, observar como en la variable de entorno hay que pone PYTHON_EXECUTABLE=ruta_del_entorno
 ---
@@ -352,7 +352,7 @@ Además, para aquellos modelos que lo requieren, se ha aplicado escalado de cara
 
 El modelo final es un `StackingRegressor` que integra a todos los anteriores y utiliza un `RandomForestRegressor` como estimador final. A continuación se muestra el esquema representativo de la arquitectura del `StackingRegressor`:
 
-📌 **\[Inserta aquí una imagen/diagrama del StackingRegressor]**
+![Esquema](fotos_readme/Esquema_regressor.png)
 
 ### 🧪 Validación y métricas
 
@@ -372,6 +372,6 @@ Antes del entrenamiento, se han generado nuevas variables derivadas con el objet
 
 La tabla `clean_datamart` se exporta automáticamente a un fichero CSV que sirve como entrada directa al pipeline de entrenamiento. La siguiente imagen muestra un extracto representativo del conjunto de datos empleados:
 
-📌 **\[Inserta aquí una imagen de una muestra del CSV generado]**
+![Datos de entrenamiento](fotos_readme/ejemplo_csv.png)
 
 ---
