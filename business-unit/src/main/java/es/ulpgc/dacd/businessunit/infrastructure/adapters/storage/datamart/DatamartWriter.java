@@ -1,6 +1,6 @@
 package es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datamart;
 
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.RatioCalculator;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalanalysis.RatioCalculator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

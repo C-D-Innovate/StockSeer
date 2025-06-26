@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.businessunit.infrastructure.ml;
+package es.ulpgc.dacd.businessunit.infrastructure.traindeploy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,12 +8,12 @@ import java.time.Instant;
 
 public class TrainingPipeline {
     private static final Logger logger = LoggerFactory.getLogger(TrainingPipeline.class);
-    private final es.ulpgc.dacd.businessunit.infrastructure.ml.PythonTrainerLauncher trainer;
-    private final es.ulpgc.dacd.businessunit.infrastructure.ml.DashboardLauncher dashboard;
+    private final es.ulpgc.dacd.businessunit.infrastructure.traindeploy.PythonTrainerLauncher trainer;
+    private final es.ulpgc.dacd.businessunit.infrastructure.traindeploy.DashboardLauncher dashboard;
     private final String cleanDatamartPath;
     private Instant lastRun = Instant.MIN;
 
-    public TrainingPipeline(es.ulpgc.dacd.businessunit.infrastructure.ml.PythonTrainerLauncher trainer, es.ulpgc.dacd.businessunit.infrastructure.ml.DashboardLauncher dashboard, String cleanDatamartPath) {
+    public TrainingPipeline(es.ulpgc.dacd.businessunit.infrastructure.traindeploy.PythonTrainerLauncher trainer, es.ulpgc.dacd.businessunit.infrastructure.traindeploy.DashboardLauncher dashboard, String cleanDatamartPath) {
         this.trainer = trainer;
         this.dashboard = dashboard;
         this.cleanDatamartPath = cleanDatamartPath;

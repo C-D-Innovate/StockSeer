@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis;
+package es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalanalysis;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

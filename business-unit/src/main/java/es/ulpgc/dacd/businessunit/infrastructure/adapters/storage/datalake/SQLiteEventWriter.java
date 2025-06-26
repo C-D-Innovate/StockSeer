@@ -2,7 +2,7 @@ package es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake;
 
 import es.ulpgc.dacd.businessunit.models.MarketEvent;
 import es.ulpgc.dacd.businessunit.models.NewsEvent;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.Classifier;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalanalysis.Classifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

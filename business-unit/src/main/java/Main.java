@@ -3,15 +3,15 @@ import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.RealTimeEvent
 import es.ulpgc.dacd.businessunit.controller.EventController;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.ActiveMQSubscriber;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.consumer.HistoricalEventReader;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.Classifier;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.PythonCalculateLabelRunner;
-import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis.PythonExecutor;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalanalysis.Classifier;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalanalysis.PythonCalculateLabelRunner;
+import es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalanalysis.PythonExecutor;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datamart.DatamartManager;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.storage.datalake.SQLiteManager;
 import es.ulpgc.dacd.businessunit.infrastructure.adapters.utils.ArgsParser;
-import es.ulpgc.dacd.businessunit.infrastructure.ml.DashboardLauncher;
-import es.ulpgc.dacd.businessunit.infrastructure.ml.PythonTrainerLauncher;
-import es.ulpgc.dacd.businessunit.infrastructure.ml.TrainingPipeline;
+import es.ulpgc.dacd.businessunit.infrastructure.traindeploy.DashboardLauncher;
+import es.ulpgc.dacd.businessunit.infrastructure.traindeploy.PythonTrainerLauncher;
+import es.ulpgc.dacd.businessunit.infrastructure.traindeploy.TrainingPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

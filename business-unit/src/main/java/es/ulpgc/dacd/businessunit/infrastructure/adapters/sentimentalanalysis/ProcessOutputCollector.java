@@ -1,4 +1,4 @@
-package es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalAnalysis;
+package es.ulpgc.dacd.businessunit.infrastructure.adapters.sentimentalanalysis;
 
 import java.io.*;
 import java.util.logging.Logger;
