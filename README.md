@@ -1,5 +1,3 @@
----
-
 # 📊 StockSeer – Predicción bursátil basada en noticias
 
 ## 📌 Descripción del proyecto y propuesta de valor
@@ -128,5 +126,102 @@ IntradayFetcher fetcher = new IntradayFetcher(
 ```
 
 👉 Esto demuestra la flexibilidad y extensibilidad del sistema, sin alterar la lógica de negocio al cambiar implementaciones concretas.
+
+---
+
+## 🧱 Módulos del proyecto
+
+A continuación se detallan los distintos módulos que componen el sistema, junto con su diagrama de clases correspondiente.
+Haz clic en el nombre de cada imagen para visualizarla en una nueva pestaña.
+
+---
+
+### 📦 `time-series-intraday-feeder`
+
+<details>
+  <summary>📄 Ver diagrama de clases</summary>
+
+🔗 [Abrir imagen en el navegador](./diagrams/time-series-intraday-feeder-class-diagram.png)
+
+</details>
+
+Este módulo se encarga de:
+
+* Obtener datos bursátiles intradía de la API de **AlphaVantage**, centrados en el símbolo `AMZN`.
+* Filtrar los eventos correspondientes al **inicio y cierre exacto del mercado estadounidense** (09:30 y 16:00 en Nueva York).
+* Publicar los eventos en un **broker ActiveMQ** o almacenarlos en **SQLite**, dependiendo de la configuración proporcionada en `args.txt`.
+
+### 📁 Flujo simplificado
+
+1. `IntradayFetcher` espera al cierre del mercado.
+2. Llama a `AlphaVantageIntradayFetcher.fetch()`.
+3. Filtra apertura/cierre exactos mediante `MarketHoursFilter`.
+4. Guarda en `SQLite` o publica en `ActiveMQ`.
+
+---
+
+### 🗞️ `news-api-feeder`
+
+<details>
+  <summary>📄 Ver diagrama de clases</summary>
+
+🔗 [Abrir imagen en el navegador](./diagrams/news-api-feeder-class-diagram.png)
+
+</details>
+
+Este módulo se encarga de:
+
+* Recuperar **noticias económicas** mediante la API de [NewsAPI.org](https://newsapi.org/), filtradas por tema y fecha.
+* Crear eventos del tipo `ArticleEvent` que contienen título, contenido, fecha de publicación, etc.
+* Enriquecer el contenido mediante técnicas de scraping si el texto original está truncado, usando librerías como `newspaper` o `BeautifulSoup`.
+* **Publicar** los artículos procesados en un broker (`ActiveMQ`) o almacenarlos en una base de datos local SQLite.
+
+### 📁 Flujo simplificado
+
+1. `ArticleController` calcula el rango de fechas del día anterior.
+2. Solicita los artículos usando `NewsApiFetcher`.
+3. Procesa y enriquece cada artículo (`ArticleProcessor`, `ArticleEnricher`).
+4. Almacena en SQLite o publica en cola/tópico con ActiveMQ.
+
+---
+Perfecto, aquí tienes la descripción del módulo `event-store-builder` para integrarla en tu README dentro del apartado de módulos:
+
+---
+
+### 🗃️ `event-store-builder`
+
+<details>
+  <summary>📄 Ver diagrama de clases</summary>
+
+🔗 [Abrir imagen en el navegador](./diagrams/event-store-builder-class-diagram.png)
+
+</details>
+
+Este módulo actúa como **consumidor durable** de eventos publicados en el broker **ActiveMQ**. Su objetivo es escuchar eventos de distintos tópicos, deserializarlos, extraer metainformación clave (`ts`, `ss`, `topic`) y almacenarlos en el sistema de ficheros con una estructura organizada.
+
+### 🧠 Principales características
+
+* Se suscribe de forma **durable** a un tópico mediante `ActiveMQSubscriber`, asegurando la entrega incluso tras reinicios.
+* Cada mensaje JSON recibido se procesa mediante el controlador `EventHandler`, que lo transforma en un objeto `Event`.
+* Los eventos se guardan en ficheros `.events` con la siguiente estructura:
+
+```
+eventstore/{topic}/{ss}/{YYYYMMDD}.events
+```
+
+Cada línea del fichero contiene un evento en formato JSON.
+
+* Utiliza el patrón **Hexagonal** con:
+
+  * **Puerto**: `EventStorage`
+  * **Adaptador**: `FileSystemStorage`, que gestiona la persistencia física.
+
+### 📁 Flujo simplificado
+
+1. `ActiveMQSubscriber` recibe un mensaje del tópico.
+2. `EventHandler` deserializa el mensaje y crea un `Event`.
+3. El evento se guarda con `FileSystemStorage`, creando la ruta si no existe.
+
+📦 Este módulo facilita la persistencia segura y estructurada de eventos históricos para futuros análisis o auditoría.
 
 ---
