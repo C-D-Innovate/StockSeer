@@ -240,6 +240,46 @@ Cada línea del fichero contiene un evento en formato JSON.
 
 ---
 
+Perfecto, aquí tienes el bloque completo del módulo `business-unit` con **la misma estructura y estilo** que los demás módulos del README:
+
+---
+
+### 🧠 `business-unit`
+
+<details>
+  <summary>📄 Ver diagrama de clases</summary>
+
+🔗 [Abrir imagen en el navegador](fotos_readme/business_unit.png)
+
+</details>
+
+Este módulo se encarga de:
+* **Integrar y transformar los datos brutos: combina los .events almacenados por el event-store-builder con los eventos en tiempo real recibidos desde el broker, realizando el matching necesario para construir la tabla clean_datamart, base del modelo de entrenamiento.
+* **Entrenar el modelo predictivo** a partir de los datos consolidados en el datamart.
+* **Lanzar el dashboard interactivo** con métricas clave e interpretaciones visuales.
+
+---
+
+### 📁 Flujo simplificado
+
+1. `EventController` inicia el proceso completo al arrancar la aplicación.
+2. `ActiveMQManager` comienza a escuchar los eventos en tiempo real desde los tópicos configurados del broker.
+3. Se realiza el *matching* entre los eventos históricos (`.events`) y los eventos en tiempo real, generando la tabla `clean_datamart` con datos consolidados.
+4. `PythonTrainerLauncher` ejecuta el script `train_from_db.py`, que entrena un `StackingRegressor` con los datos del datamart.
+5. `DashboardLauncher` lanza `dashboard_modelo.py`, mostrando un dashboard visual con predicciones, métricas clave y explicaciones para el usuario.
+
+---
+
+### 🧩 Principios y patrones aplicados
+
+* **Clean Architecture + Hexagonal**: separación clara entre controladores, almacenamiento, suscripción, entrenamiento y visualización.
+* **Adapter Pattern**: clases como `SQLiteManager`, `DatamartManager`, `ActiveMQManager` o `PythonTrainerLauncher` implementan sus respectivos puertos.
+* **Command Pattern** (implícito): lanzadores de scripts (`PythonTrainerLauncher`, `DashboardLauncher`) encapsulan llamadas externas.
+* **SRP / OCP**: cada clase tiene una única responsabilidad clara (por ejemplo, `DashboardLauncher` solo lanza visualizaciones).
+* **DRY**: toda la lógica repetitiva (como ejecución de Python) está centralizada en `PythonExecutor`.
+
+---
+
 ## 🛠️ Instrucciones para compilar y ejecutar cada módulo
 
 Todos los módulos del sistema están desarrollados en **Java 21** usando **Maven**. Algunos de ellos también invocan scripts externos en **Python 3.11+** para realizar tareas auxiliares como el enriquecimiento de contenido.
@@ -259,7 +299,7 @@ A continuación, se muestra un ejemplo de configuración por módulo:
 
 ```txt
 API_KEY=TuAPIKEY
-DB_URL=jdbc:sqlite:data.db
+DB_URL=jdbc:sqlite:ruta
 SYMBOL=AMZN
 FETCH_INTERVAL_MINUTES=1
 STORAGE_MODE=activemq o sqlite
@@ -298,6 +338,24 @@ CLIENT_ID=event-store-builder-client
 
 ---
 
+#### 🧠 `business-unit` – `args.txt`
+
+```txt
+SQLITE_DB_URL=jdbc:sqlite:ruta
+EVENTSTORE_PATH=ruta/proyecto/eventstore
+BROKER_URL=tcp://localhost:61616
+TOPICS=Articles, StockQuotes
+CLIENT_ID=business-unit-client
+CLEAN_DATAMART_PATH=ruta/proyecto/database.db
+TRAIN_SCRIPT_PATH=ruta/resources/train_from_db.py
+DASHBOARD_SCRIPT_PATH=ruta/resources/dashboard_modelo.py
+DASHBOARD_CSV_PATH=ruta/resources/dashboard_data.csv
+DASHBOARD_MODEL_PATH=ruta/resources/trained_model.pkl
+TRAINING_INTERVAL_MINUTES=5
+```
+
+---
+
 ### ⚙️ Formas de ejecución
 
 Existen dos formas principales de ejecutar los módulos:
@@ -319,20 +377,19 @@ NOTA: En caso de necesitar el entorno de python, observar como en la variable de
 Para que el sistema funcione correctamente, se recomienda ejecutar los módulos en el siguiente orden:
 
 1. **`event-store-builder`**
-   (Empieza escuchando en el broker y está listo para almacenar eventos que lleguen)
-   Para ejecutar este módulo proporcionamos ya la carpeta evenstore dentro de su módulo correspondiente, con el histórico de cada api, porque sino el tiempo de     ejecución sería muy largo.
+   (Empieza escuchando en el broker y está listo para almacenar eventos que lleguen).
+   Para facilitar la ejecución, se proporciona la carpeta `eventstore` dentro del módulo con el histórico de cada API, evitando esperas prolongadas al simular datos antiguos.
+
+2. **`business-unit`**
+   (Integra los eventos ya almacenados con los eventos en tiempo real que llegan al broker, construye el `clean_datamart`, entrena el modelo predictivo y lanza el dashboard con métricas e interpretaciones visuales).
 
 3. **`time-series-intraday-feeder`**
-   (Obtiene y publica datos bursátiles de apertura/cierre)
+   (Obtiene y publica datos bursátiles de apertura/cierre).
 
 4. **`news-api-feeder`**
-   (Recupera noticias y publica o guarda los artículos enriquecidos)
+   (Recupera noticias y publica o guarda los artículos enriquecidos).
 
-De este modo, garantizas que todos los consumidores estén activos antes de que se publiquen los eventos.
-
----
-
-Perfecto, aquí tienes un texto redactado para el README o memoria del proyecto. Incluye dos huecos claros para insertar imágenes: uno para el esquema del `StackingRegressor` y otro para una muestra del `CSV` de entrada. Está redactado de forma profesional, pero comprensible:
+De este modo, garantizas que todos los consumidores estén activos antes de que se publiquen los eventos, y que el módulo final de análisis pueda acceder a todos los datos necesarios para generar predicciones fiables.
 
 ---
 
@@ -373,5 +430,16 @@ Antes del entrenamiento, se han generado nuevas variables derivadas con el objet
 La tabla `clean_datamart` se exporta automáticamente a un fichero CSV que sirve como entrada directa al pipeline de entrenamiento. La siguiente imagen muestra un extracto representativo del conjunto de datos empleados:
 
 ![Datos de entrenamiento](fotos_readme/ejemplo_csv.png)
+
+Claro, aquí tienes el bloque corregido con los enlaces insertados correctamente en formato Markdown:
+
+---
+
+### ✒️ Autores
+
+Este proyecto fue desarrollado por el equipo [**C\&D Innovate**](https://github.com/C-D-Innovate), compuesto por dos integrantes:
+
+* [**Carlos Falcón Rodríguez** – `Cafabri`](https://github.com/Cafabri)
+* [**Daniel Perdomo Medina** – `Perdomin38`](https://github.com/Perdomin38)
 
 ---
