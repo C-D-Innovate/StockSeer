@@ -245,7 +245,7 @@ Cada línea del fichero contiene un evento en formato JSON.
 <details>
   <summary>📄 Ver diagrama de clases</summary>
 
-🔗 [Abrir imagen en el navegador](fotos_readme/business_unit.png)
+🔗 [Abrir imagen en el navegador](fotos_readme/business-unit.png)
 
 </details>
 
