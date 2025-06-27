@@ -141,7 +141,7 @@ Haz clic en el nombre de cada imagen para visualizarla en una nueva pestaña.
 <details>
   <summary>📄 Ver diagrama de clases</summary>
 
-🔗 [Abrir imagen en el navegador](./diagrams/time-series-intraday-feeder-class-diagram.png)
+🔗 [Abrir imagen en el navegador](fotos_readme/Alphavantage.png)
 
 </details>
 
@@ -172,7 +172,7 @@ Este módulo se encarga de:
 <details>
   <summary>📄 Ver diagrama de clases</summary>
 
-🔗 [Abrir imagen en el navegador](./diagrams/news-api-feeder-class-diagram.png)
+🔗 [Abrir imagen en el navegador](fotos_readme/newsapi_diagrama.png)
 
 </details>
 
@@ -203,7 +203,7 @@ Este módulo se encarga de:
 <details>
   <summary>📄 Ver diagrama de clases</summary>
 
-🔗 [Abrir imagen en el navegador](./diagrams/event-store-builder-class-diagram.png)
+🔗 [Abrir imagen en el navegador](fotos_readme/EventStore.png)
 
 </details>
 
