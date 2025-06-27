@@ -240,10 +240,6 @@ Cada línea del fichero contiene un evento en formato JSON.
 
 ---
 
-Perfecto, aquí tienes el bloque completo del módulo `business-unit` con **la misma estructura y estilo** que los demás módulos del README:
-
----
-
 ### 🧠 `business-unit`
 
 <details>
