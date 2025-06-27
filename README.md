@@ -427,7 +427,6 @@ La tabla `clean_datamart` se exporta automáticamente a un fichero CSV que sirve
 
 ![Datos de entrenamiento](fotos_readme/ejemplo_csv.png)
 
-Claro, aquí tienes el bloque corregido con los enlaces insertados correctamente en formato Markdown:
 
 ---
 
